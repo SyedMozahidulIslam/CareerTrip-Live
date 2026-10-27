@@ -1,0 +1,6 @@
+{
+  "name": "CareerTrip Live",
+  "description": "Verifiable Skills and Project Portfolio Network with evidence-based assessments, transparent evaluations, and recruiter discovery.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
