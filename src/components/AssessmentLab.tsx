@@ -1,23 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { AssessmentChallenge, AssessmentSubmission, User } from '../types';
-import {
-  Code2,
-  Play,
-  CheckCircle2,
-  XCircle,
-  Clock,
-  Sparkles,
-  ShieldCheck,
-  AlertCircle,
-  FileText,
-  RotateCcw,
-  Send,
-  Sliders,
-  Award,
-  ChevronRight,
-  BookOpen,
-  UserCheck
-} from 'lucide-react';
 
 interface AssessmentLabProps {
   challenges: AssessmentChallenge[];
@@ -54,11 +36,10 @@ export const AssessmentLab: React.FC<AssessmentLabProps> = ({
   const [genFocus, setGenFocus] = useState('Concurrency & Fault Recovery');
   const [isGenerating, setIsGenerating] = useState(false);
 
-  // Human Reviewer Form State (for Evaluator persona)
+  // Human Reviewer Form State
   const [reviewScore, setReviewScore] = useState<number>(92);
   const [reviewNotes, setReviewNotes] = useState<string>('Candidate demonstrated exceptional rigor in invariant preservation and partition resilience.');
 
-  // Timer
   useEffect(() => {
     if (activeSubmission) return;
     const interval = setInterval(() => {
@@ -67,7 +48,6 @@ export const AssessmentLab: React.FC<AssessmentLabProps> = ({
     return () => clearInterval(interval);
   }, [activeSubmission]);
 
-  // When changing challenge, reload code and test states
   const handleSelectChallenge = (c: AssessmentChallenge) => {
     setSelectedChallenge(c);
     setCode(c.starterCode);
@@ -84,28 +64,26 @@ export const AssessmentLab: React.FC<AssessmentLabProps> = ({
     return `${m}:${s < 10 ? '0' : ''}${s}`;
   };
 
-  // Run deterministic tests
   const handleRunTests = () => {
     setIsRunningTests(true);
     setTimeout(() => {
       const results = selectedChallenge.testCases.map((tc, idx) => {
-        const hasWork = code.length > 80 && !code.includes('throw new Error(\'Not implemented\')');
+        const hasWork = code.length > 80 && !code.includes("throw new Error('Not implemented')");
         const pass = hasWork && (idx !== 2 || code.includes('committed') || code.includes('linearizable') || code.includes('prefixSums') || code.includes('delta'));
         return {
           id: tc.id,
           inputDesc: tc.inputDesc,
           passed: Boolean(pass),
           message: pass
-            ? `Passed: Output matches expected assertion criteria.`
-            : `Failed: Edge case not handled or default exception encountered.`,
+            ? 'VERIFIED: Output matches contract assertions.'
+            : 'ASSERTION FAILED: Default stub or boundary uncaught.',
         };
       });
       setTestResults(results);
       setIsRunningTests(false);
-    }, 600);
+    }, 500);
   };
 
-  // Submit to Server for AI Rubric Scoring & Anti-fraud check
   const handleSubmit = async () => {
     if (!code || code.length < 50) {
       alert('Please provide code solution before submitting.');
@@ -166,50 +144,61 @@ export const AssessmentLab: React.FC<AssessmentLabProps> = ({
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-      {/* Top Banner */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-zinc-900 border border-zinc-800 rounded-xl p-5 shadow-sm">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold text-white tracking-tight">Practical Assessment Lab</h1>
-            <span className="text-[10px] px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/30 font-semibold">
-              GEMINI EVALUATION & RUBRIC SYSTEM
-            </span>
+    <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+      {/* Assessment Header Strip */}
+      <div className="bg-[#000000] border border-[#272727]">
+        <div className="px-6 py-2 border-b border-[#272727] bg-[#0A0A0C] flex flex-wrap items-center justify-between font-mono text-[10px] text-[#767676]">
+          <div className="flex items-center gap-3">
+            <span className="text-[#F1F2F2]">LAB SPEC // 04.0</span>
+            <span>/</span>
+            <span>EVALUATION ENGINE: GEMINI 2.5-FLASH + HUMAN AUDITOR</span>
           </div>
-          <p className="text-xs text-zinc-300 mt-1">
-            Real engineering challenges evaluated on correctness, architecture, implementation quality, edge case handling, and communication.
-          </p>
+          <div className="flex items-center gap-3">
+            <span>RUBRIC DIMENSIONS: 5</span>
+            <span>/</span>
+            <span className="text-[#F56B2A]">ISOLATION: SECURE STATIC EVAL</span>
+          </div>
         </div>
 
-        <button
-          onClick={() => setShowGenModal(true)}
-          className="px-3.5 py-2 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white rounded-lg text-xs font-semibold flex items-center gap-2 shadow-sm transition-all"
-        >
-          <Sparkles className="w-3.5 h-3.5" />
-          <span>Generate Role Challenge with Gemini AI</span>
-        </button>
+        <div className="p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+          <div className="space-y-1">
+            <h1 className="text-2xl sm:text-3xl font-light text-[#F1F2F2] tracking-tight">
+              Practical Assessment Lab
+            </h1>
+            <p className="text-sm text-[#767676] font-mono">
+              Role-specific algorithmic challenges evaluated across 5 transparent dimensions.
+            </p>
+          </div>
+
+          <button
+            onClick={() => setShowGenModal(true)}
+            className="px-4 py-2 bg-[#F56B2A] hover:bg-[#ff7b3d] text-black font-mono text-xs font-semibold uppercase tracking-wider transition-colors shrink-0"
+          >
+            [+ GENERATE ROLE CHALLENGE (GEMINI)]
+          </button>
+        </div>
       </div>
 
-      {/* Challenge Selector Pills */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2">
-        {challenges.map((c) => {
+      {/* Challenge Selection Strip */}
+      <div className="flex items-stretch border-b border-[#272727] overflow-x-auto bg-[#070709] divide-x divide-[#272727]">
+        {challenges.map((c, idx) => {
           const isSelected = c.id === selectedChallenge.id;
           const isDone = submissions.some((s) => s.challengeId === c.id && s.candidateId === currentUser.id);
+
           return (
             <button
               key={c.id}
               onClick={() => handleSelectChallenge(c)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors flex items-center gap-2 border ${
+              className={`px-4 py-2.5 font-mono text-xs uppercase tracking-wider transition-colors flex items-center gap-2.5 whitespace-nowrap ${
                 isSelected
-                  ? 'bg-zinc-800 text-white border-indigo-500/50 shadow-sm'
-                  : 'bg-zinc-900/60 text-zinc-400 border-zinc-800 hover:text-zinc-200 hover:bg-zinc-800'
+                  ? 'bg-[#000000] text-[#F1F2F2] border-t-2 border-t-[#F56B2A]'
+                  : 'text-[#767676] hover:text-[#F1F2F2] hover:bg-[#0B0B0E]'
               }`}
             >
-              <span>{c.title}</span>
-              <span className="text-[10px] px-1.5 py-0.2 rounded bg-zinc-950 text-zinc-400 font-mono">
-                {c.difficulty}
-              </span>
-              {isDone && <CheckCircle2 className="w-3 h-3 text-emerald-400" />}
+              <span className="text-[10px] text-[#555555]">CHAL_0{idx + 1}</span>
+              <span className="font-semibold">{c.title}</span>
+              <span className="text-[10px] text-[#767676]">[{c.difficulty}]</span>
+              {isDone && <span className="text-[#F56B2A] text-xs">●</span>}
             </button>
           );
         })}
@@ -217,67 +206,67 @@ export const AssessmentLab: React.FC<AssessmentLabProps> = ({
 
       {/* Main Split-Pane Workspace */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left Pane: Challenge Specs & Instructions (5 cols) */}
+        {/* Left Pane: Challenge Specifications (5 cols) */}
         <div className="lg:col-span-5 space-y-4">
-          <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5 space-y-4 shadow-sm">
-            <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
-              <span className="text-xs px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 font-mono">
-                {selectedChallenge.roleCategory}
-              </span>
-              <div className="flex items-center gap-1.5 text-xs font-mono text-zinc-400">
-                <Clock className="w-3.5 h-3.5 text-amber-400" />
-                <span>{formatTime(secondsRemaining)} remaining</span>
+          <div className="bg-[#000000] border border-[#272727] p-5 space-y-5">
+            <div className="flex items-center justify-between pb-3 border-b border-[#202020] font-mono text-xs">
+              <span className="text-[#F56B2A] font-semibold">{selectedChallenge.roleCategory.toUpperCase()}</span>
+              <div className="text-[#767676] flex items-center gap-1.5">
+                <span>TIMER:</span>
+                <span className="text-[#F1F2F2] font-bold">{formatTime(secondsRemaining)}</span>
               </div>
             </div>
 
             <div>
-              <h2 className="text-base font-bold text-white">{selectedChallenge.title}</h2>
-              <div className="text-xs text-zinc-300 leading-relaxed mt-2 bg-zinc-950/60 p-3.5 rounded-lg border border-zinc-800">
-                <strong className="text-indigo-300 block mb-1">Production Scenario:</strong>
-                {selectedChallenge.scenario}
+              <h2 className="text-base font-bold text-[#F1F2F2] tracking-tight">{selectedChallenge.title}</h2>
+              <div className="text-xs text-[#D0D1D2] leading-relaxed mt-2 p-3.5 bg-[#08080A] border border-[#202020] space-y-1">
+                <span className="font-mono text-[10px] text-[#F56B2A] uppercase tracking-wider block">
+                  SYSTEM SCENARIO:
+                </span>
+                <p>{selectedChallenge.scenario}</p>
               </div>
             </div>
 
-            {/* Step-by-step instructions */}
+            {/* Invariants & Requirements */}
             <div className="space-y-2">
-              <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider block">
-                Requirements & Invariants
+              <span className="font-mono text-[10px] text-[#767676] uppercase tracking-wider block">
+                INVARIANTS & REQUIREMENTS
               </span>
-              <div className="space-y-1.5">
+              <div className="space-y-1.5 font-mono text-xs text-[#D0D1D2]">
                 {selectedChallenge.instructions.map((ins, i) => (
-                  <div key={i} className="text-xs text-zinc-300 bg-zinc-950/40 p-2 rounded border border-zinc-800/80 flex items-start gap-2">
-                    <ChevronRight className="w-3.5 h-3.5 text-indigo-400 flex-shrink-0 mt-0.5" />
+                  <div key={i} className="p-2 bg-[#08080A] border border-[#1C1C1F] flex items-start gap-2">
+                    <span className="text-[#F56B2A] font-bold">[{i + 1}]</span>
                     <span>{ins}</span>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Test Cases preview */}
-            <div className="space-y-2 pt-2 border-t border-zinc-800">
-              <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider block">
-                Target Verification Assertions ({selectedChallenge.testCases.length})
+            {/* Target Assertions */}
+            <div className="space-y-2 pt-2 border-t border-[#202020]">
+              <span className="font-mono text-[10px] text-[#767676] uppercase tracking-wider block">
+                TARGET ASSERTIONS ({selectedChallenge.testCases.length})
               </span>
-              <div className="space-y-2">
+              <div className="space-y-2 font-mono text-xs">
                 {selectedChallenge.testCases.map((tc, idx) => (
-                  <div key={tc.id} className="text-xs bg-zinc-950/70 p-2.5 rounded-lg border border-zinc-800/80 space-y-1 font-mono">
-                    <div className="text-zinc-300 font-semibold">Assertion #{idx + 1}: {tc.inputDesc}</div>
-                    <div className="text-zinc-500 text-[11px]">Expectation: {tc.expectedOutputDesc}</div>
+                  <div key={tc.id} className="p-2.5 bg-[#08080A] border border-[#1C1C1F] space-y-1">
+                    <div className="text-[#F1F2F2] font-semibold">ASSERTION 0{idx + 1}: {tc.inputDesc}</div>
+                    <div className="text-[#767676] text-[10px]">CONTRACT: {tc.expectedOutputDesc}</div>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Rubric Dimensions */}
-            <div className="space-y-2 pt-2 border-t border-zinc-800">
-              <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider block">
-                5-Dimension Structured Rubric
+            {/* Rubric Weights */}
+            <div className="space-y-2 pt-2 border-t border-[#202020]">
+              <span className="font-mono text-[10px] text-[#767676] uppercase tracking-wider block">
+                EVALUATION RUBRIC WEIGHTS
               </span>
-              <div className="grid grid-cols-2 gap-2 text-[11px]">
+              <div className="grid grid-cols-2 gap-2 font-mono text-[10px]">
                 {selectedChallenge.evaluationRubric.map((r) => (
-                  <div key={r.dimension} className="bg-zinc-950/60 p-2 rounded border border-zinc-800">
-                    <div className="font-semibold text-zinc-200 capitalize">{r.name}</div>
-                    <div className="text-zinc-500 text-[10px]">{r.maxPoints} pts max</div>
+                  <div key={r.dimension} className="p-2 bg-[#08080A] border border-[#1C1C1F]">
+                    <div className="font-semibold text-[#F1F2F2] uppercase">{r.name}</div>
+                    <div className="text-[#F56B2A]">{r.maxPoints}% WEIGHT</div>
                   </div>
                 ))}
               </div>
@@ -285,24 +274,22 @@ export const AssessmentLab: React.FC<AssessmentLabProps> = ({
           </div>
         </div>
 
-        {/* Right Pane: Code Solution, Rationale & Test Runner (7 cols) */}
+        {/* Right Pane: Code Solution & Test Runner (7 cols) */}
         <div className="lg:col-span-7 space-y-4">
-          {/* Solution Editor */}
-          <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden shadow-sm">
-            <div className="bg-zinc-950 px-4 py-2.5 border-b border-zinc-800 flex items-center justify-between">
+          <div className="bg-[#000000] border border-[#272727]">
+            {/* Code Header */}
+            <div className="px-4 py-2.5 border-b border-[#272727] bg-[#0A0A0C] flex items-center justify-between font-mono text-xs">
               <div className="flex items-center gap-2">
-                <Code2 className="w-4 h-4 text-indigo-400" />
-                <span className="text-xs font-mono font-semibold text-zinc-200">
+                <span className="text-[#F56B2A]">FILE:</span>
+                <span className="text-[#F1F2F2] font-semibold">
                   solution.{selectedChallenge.language === 'typescript' ? 'ts' : selectedChallenge.language}
                 </span>
               </div>
               <button
                 onClick={() => setCode(selectedChallenge.starterCode)}
-                className="text-xs text-zinc-400 hover:text-white flex items-center gap-1"
-                title="Reset starter template"
+                className="text-[#767676] hover:text-[#F1F2F2] uppercase"
               >
-                <RotateCcw className="w-3 h-3" />
-                <span>Reset</span>
+                [RESET TEMPLATE]
               </button>
             </div>
 
@@ -310,148 +297,142 @@ export const AssessmentLab: React.FC<AssessmentLabProps> = ({
               rows={14}
               value={code}
               onChange={(e) => setCode(e.target.value)}
-              className="w-full bg-zinc-950 p-4 font-mono text-xs text-zinc-200 focus:outline-none resize-y leading-relaxed border-none"
+              className="w-full bg-[#000000] p-4 font-mono text-xs text-[#F1F2F2] focus:outline-none resize-y leading-relaxed border-none"
               placeholder="// Write clean, production-oriented solution code here..."
             />
 
             {/* Architectural Rationale Input */}
-            <div className="p-4 bg-zinc-950/80 border-t border-zinc-800 space-y-2">
-              <label className="block text-xs font-semibold text-zinc-300">
-                Architectural Rationale & Safety Invariants
+            <div className="p-4 bg-[#08080A] border-t border-[#202020] space-y-2 font-mono text-xs">
+              <label className="block text-[10px] uppercase text-[#767676] tracking-wider">
+                ARCHITECTURAL RATIONALE & SAFETY INVARIANTS
               </label>
               <textarea
                 rows={3}
                 value={rationale}
                 onChange={(e) => setRationale(e.target.value)}
-                placeholder="Explain why this approach satisfies correctness invariants, prevents split-brain, or optimizes memory/latency tradeoffs..."
-                className="w-full bg-zinc-900 border border-zinc-700/80 rounded-lg p-2.5 text-xs text-zinc-200 focus:outline-none focus:border-indigo-500"
+                placeholder="Detail why this approach maintains invariants, avoids partition divergence, and bounds memory..."
+                className="w-full bg-[#000000] border border-[#272727] p-2.5 text-xs text-[#F1F2F2] font-sans focus:outline-none focus:border-[#F56B2A]"
               />
             </div>
 
-            {/* Actions Bar */}
-            <div className="bg-zinc-900 px-4 py-3 border-t border-zinc-800 flex items-center justify-between">
+            {/* Action Buttons */}
+            <div className="px-4 py-3 border-t border-[#202020] bg-[#0A0A0C] flex items-center justify-between font-mono text-xs">
               <button
                 onClick={handleRunTests}
                 disabled={isRunningTests}
-                className="px-3.5 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors"
+                className="px-3.5 py-2 bg-[#0F0E12] hover:bg-[#F1F2F2] hover:text-[#000000] text-[#F1F2F2] border border-[#272727] uppercase tracking-wider transition-colors"
               >
-                <Play className="w-3.5 h-3.5 text-emerald-400" />
-                <span>{isRunningTests ? 'Running Assertions...' : 'Run Test Cases'}</span>
+                {isRunningTests ? '[RUNNING ASSERTIONS...]' : '[RUN TEST ASSERTIONS]'}
               </button>
 
               <button
                 onClick={handleSubmit}
                 disabled={isSubmitting}
-                className="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-sm"
+                className="px-4 py-2 bg-[#F56B2A] hover:bg-[#ff7b3d] text-black font-semibold uppercase tracking-wider transition-colors disabled:opacity-50"
               >
-                <Send className="w-3.5 h-3.5" />
-                <span>{isSubmitting ? 'Evaluating with Gemini...' : 'Submit for AI Rubric Evaluation'}</span>
+                {isSubmitting ? '[EVALUATING WITH GEMINI...]' : '[SUBMIT FOR AI EVALUATION]'}
               </button>
             </div>
           </div>
 
-          {/* Test Runner Results Output */}
+          {/* Test Runner Results */}
           {testResults && (
-            <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 space-y-2.5">
-              <h3 className="text-xs font-semibold text-zinc-300 uppercase tracking-wider flex items-center gap-2">
-                <span>Test Execution Results</span>
-                <span className="text-zinc-500 font-mono">
-                  ({testResults.filter((r) => r.passed).length}/{testResults.length} Passed)
+            <div className="bg-[#000000] border border-[#272727] p-4 space-y-2 font-mono text-xs">
+              <div className="flex items-center justify-between pb-2 border-b border-[#202020]">
+                <span className="text-[#767676] uppercase tracking-wider text-[10px]">ASSERTION RUN OUTPUT</span>
+                <span className="text-[#F1F2F2]">
+                  {testResults.filter((r) => r.passed).length}/{testResults.length} PASSED
                 </span>
-              </h3>
-
+              </div>
               <div className="space-y-1.5">
                 {testResults.map((tr) => (
                   <div
                     key={tr.id}
-                    className={`p-2.5 rounded-lg border text-xs flex items-start gap-2.5 ${
+                    className={`p-2.5 border text-xs flex items-start justify-between gap-3 ${
                       tr.passed
-                        ? 'bg-emerald-950/20 border-emerald-500/30 text-emerald-300'
-                        : 'bg-rose-950/20 border-rose-500/30 text-rose-300'
+                        ? 'border-[#272727] bg-[#08080A] text-[#F1F2F2]'
+                        : 'border-[#F56B2A] bg-[#0F0E12] text-[#F56B2A]'
                     }`}
                   >
-                    {tr.passed ? (
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
-                    ) : (
-                      <XCircle className="w-4 h-4 text-rose-400 flex-shrink-0 mt-0.5" />
-                    )}
                     <div>
                       <div className="font-semibold">{tr.inputDesc}</div>
-                      <div className="text-[11px] opacity-90">{tr.message}</div>
+                      <div className="text-[11px] text-[#767676] mt-0.5">{tr.message}</div>
                     </div>
+                    <span className="font-bold text-[10px] uppercase">
+                      {tr.passed ? '[PASS]' : '[FAIL]'}
+                    </span>
                   </div>
                 ))}
               </div>
             </div>
           )}
 
-          {/* Evaluation Results Card (AI suggestions + Reviewer Verification) */}
+          {/* Active Evaluation Output Dossier */}
           {activeSubmission && (
-            <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5 space-y-4 shadow-sm">
-              <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
-                <div className="flex items-center gap-2">
-                  <Award className="w-5 h-5 text-indigo-400" />
-                  <div>
-                    <h3 className="text-sm font-bold text-white">Evaluation Results & Rubric Scores</h3>
-                    <p className="text-[11px] text-zinc-400">
-                      Clear separation: AI suggestion vs human evaluator verified
-                    </p>
-                  </div>
+            <div className="bg-[#000000] border border-[#272727] p-5 space-y-5">
+              <div className="flex items-center justify-between pb-3 border-b border-[#202020]">
+                <div className="space-y-0.5 font-mono">
+                  <h3 className="text-sm font-bold text-[#F1F2F2] uppercase tracking-wider">
+                    EVALUATION DOSSIER // RUBRIC SCORES
+                  </h3>
+                  <p className="text-[10px] text-[#767676]">
+                    DISTINCTION: AI PROPOSAL VS ACCREDITED HUMAN SIGN-OFF
+                  </p>
                 </div>
 
-                <div className="text-right">
-                  <span className="text-xs text-zinc-400 block font-mono">Verified Score</span>
-                  <span className="text-xl font-bold font-mono text-emerald-400">
+                <div className="text-right font-mono">
+                  <span className="text-[10px] text-[#767676] block">VERIFIED SCORE</span>
+                  <span className="text-xl font-bold text-[#F56B2A]">
                     {activeSubmission.humanReview
                       ? `${activeSubmission.humanReview.verifiedScore}/100`
-                      : `${activeSubmission.aiEvaluation?.overallScore}/100 (AI)`}
+                      : `${activeSubmission.aiEvaluation?.overallScore}/100`}
                   </span>
                 </div>
               </div>
 
               {/* 5 Dimension meters */}
               {activeSubmission.aiEvaluation && (
-                <div className="space-y-2">
-                  <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider block">
-                    Dimension-Level Scoring
+                <div className="space-y-2 font-mono">
+                  <span className="text-[10px] text-[#767676] uppercase tracking-wider block">
+                    DIMENSION-LEVEL SPECIFICATION
                   </span>
                   <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
                     {Object.entries(activeSubmission.aiEvaluation.dimensionScores).map(([dim, score]) => (
-                      <div key={dim} className="bg-zinc-950 p-2.5 rounded-lg border border-zinc-800 text-center">
-                        <span className="block text-[10px] text-zinc-400 uppercase tracking-wider truncate">
+                      <div key={dim} className="p-2.5 bg-[#08080A] border border-[#202020] text-center">
+                        <span className="block text-[9px] text-[#767676] uppercase truncate">
                           {dim.replace('_', ' ')}
                         </span>
-                        <strong className="text-base font-mono text-indigo-300">{score}%</strong>
+                        <strong className="text-sm text-[#F1F2F2]">{score}%</strong>
                       </div>
                     ))}
                   </div>
                 </div>
               )}
 
-              {/* Qualitative feedback & Strengths */}
+              {/* Strengths & Weaknesses */}
               {activeSubmission.aiEvaluation && (
-                <div className="bg-zinc-950/70 p-3.5 rounded-lg border border-zinc-800 space-y-2 text-xs">
-                  <p className="text-zinc-200 leading-relaxed font-medium">
+                <div className="p-4 bg-[#08080A] border border-[#202020] space-y-3 text-xs">
+                  <p className="text-[#D0D1D2] font-mono leading-relaxed">
                     {activeSubmission.aiEvaluation.feedback}
                   </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-[#1C1C1F] font-mono text-[11px]">
                     <div>
-                      <span className="text-[10px] font-semibold text-emerald-400 uppercase tracking-wider block mb-1">
-                        Observed Strengths
+                      <span className="text-[10px] text-[#F1F2F2] uppercase tracking-wider block mb-1">
+                        OBSERVED STRENGTHS
                       </span>
-                      <ul className="list-disc list-inside space-y-0.5 text-zinc-300 text-[11px]">
+                      <ul className="list-disc list-inside space-y-1 text-[#767676]">
                         {activeSubmission.aiEvaluation.strengths.map((s, idx) => (
-                          <li key={idx}>{s}</li>
+                          <li key={idx}><span className="text-[#D0D1D2]">{s}</span></li>
                         ))}
                       </ul>
                     </div>
                     <div>
-                      <span className="text-[10px] font-semibold text-amber-400 uppercase tracking-wider block mb-1">
-                        Areas for Refinement
+                      <span className="text-[10px] text-[#F56B2A] uppercase tracking-wider block mb-1">
+                        AREAS FOR REFINEMENT
                       </span>
-                      <ul className="list-disc list-inside space-y-0.5 text-zinc-300 text-[11px]">
+                      <ul className="list-disc list-inside space-y-1 text-[#767676]">
                         {activeSubmission.aiEvaluation.weaknesses.map((w, idx) => (
-                          <li key={idx}>{w}</li>
+                          <li key={idx}><span className="text-[#D0D1D2]">{w}</span></li>
                         ))}
                       </ul>
                     </div>
@@ -459,85 +440,77 @@ export const AssessmentLab: React.FC<AssessmentLabProps> = ({
                 </div>
               )}
 
-              {/* Human Evaluator Sign-off Section */}
+              {/* Human Evaluator Panel */}
               {activeSubmission.humanReview ? (
-                <div className="bg-emerald-950/20 border border-emerald-500/30 rounded-lg p-3 text-xs space-y-1">
-                  <div className="flex items-center justify-between text-emerald-400 font-semibold">
-                    <span className="flex items-center gap-1.5">
-                      <ShieldCheck className="w-4 h-4" />
-                      Human Evaluator Certified: {activeSubmission.humanReview.reviewerName}
+                <div className="p-3.5 bg-[#08080A] border border-[#272727] font-mono text-xs space-y-1">
+                  <div className="flex items-center justify-between text-[#F1F2F2]">
+                    <span className="font-semibold uppercase">
+                      HUMAN EVALUATOR SIGN-OFF: {activeSubmission.humanReview.reviewerName}
                     </span>
-                    <span className="font-mono text-[10px]">{activeSubmission.humanReview.verifiedAt}</span>
+                    <span className="text-[10px] text-[#767676]">{activeSubmission.humanReview.verifiedAt}</span>
                   </div>
-                  <p className="text-zinc-300 italic">"{activeSubmission.humanReview.qualitativeFeedback}"</p>
+                  <p className="text-[#D0D1D2] font-serif italic text-xs">"{activeSubmission.humanReview.qualitativeFeedback}"</p>
                 </div>
               ) : currentUser.role === 'reviewer' || currentUser.role === 'admin' ? (
-                <div className="bg-zinc-950 p-4 rounded-lg border border-zinc-700/80 space-y-3">
+                <div className="p-4 border border-[#F56B2A] bg-[#08080A] space-y-3 font-mono text-xs">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                      <UserCheck className="w-4 h-4 text-emerald-400" />
-                      Evaluator Audit & Sign-off Panel
+                    <span className="font-bold text-[#F1F2F2] uppercase">
+                      [EVALUATOR CERTIFICATION AUDIT PANEL]
                     </span>
-                    <span className="text-[10px] text-zinc-400">Available to Certified Reviewers</span>
+                    <span className="text-[10px] text-[#F56B2A]">AUTHORIZED REVIEWER</span>
                   </div>
-                  <div className="grid grid-cols-2 gap-3 text-xs">
+                  <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-zinc-400 mb-1">Audit Score (0-100)</label>
+                      <label className="block text-[#767676] mb-1 uppercase text-[10px]">AUDIT SCORE (0-100)</label>
                       <input
                         type="number"
                         min={0}
                         max={100}
                         value={reviewScore}
                         onChange={(e) => setReviewScore(Number(e.target.value))}
-                        className="w-full bg-zinc-900 border border-zinc-700 rounded p-1.5 text-zinc-100 font-mono"
+                        className="w-full bg-[#000000] border border-[#272727] p-2 text-[#F1F2F2]"
                       />
                     </div>
                     <div>
-                      <label className="block text-zinc-400 mb-1">Reviewer Note</label>
+                      <label className="block text-[#767676] mb-1 uppercase text-[10px]">REVIEW NOTE</label>
                       <input
                         type="text"
                         value={reviewNotes}
                         onChange={(e) => setReviewNotes(e.target.value)}
-                        className="w-full bg-zinc-900 border border-zinc-700 rounded p-1.5 text-zinc-100"
+                        className="w-full bg-[#000000] border border-[#272727] p-2 text-[#F1F2F2]"
                       />
                     </div>
                   </div>
                   <button
                     onClick={handleApproveSubmission}
-                    className="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-xs font-semibold transition-colors flex items-center justify-center gap-2"
+                    className="w-full py-2 bg-[#F56B2A] hover:bg-[#ff7b3d] text-black font-semibold uppercase text-xs tracking-wider"
                   >
-                    <ShieldCheck className="w-4 h-4" />
-                    <span>Approve & Certify Candidate Submission</span>
+                    [APPROVE & CERTIFY CANDIDATE SUBMISSION]
                   </button>
                 </div>
-              ) : (
-                <div className="text-[11px] text-zinc-400 italic">
-                  Note: AI rubric evaluations serve as evidence recommendations. Final certification requires independent evaluator audit in the Verification Hub.
-                </div>
-              )}
+              ) : null}
             </div>
           )}
         </div>
       </div>
 
-      {/* Generate Custom Challenge Modal */}
+      {/* Modal: Generate Challenge */}
       {showGenModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-          <div className="bg-zinc-900 border border-zinc-800 rounded-xl max-w-lg w-full p-6 space-y-4 shadow-xl">
-            <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-indigo-400" />
-                Generate Role Challenge with Gemini
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4">
+          <div className="bg-[#000000] border border-[#272727] max-w-lg w-full p-6 space-y-4">
+            <div className="flex items-center justify-between border-b border-[#272727] pb-3 font-mono">
+              <h3 className="text-xs font-bold text-[#F1F2F2] uppercase tracking-wider">
+                [SYNTHESIZE CHALLENGE // GEMINI AI]
               </h3>
-              <button onClick={() => setShowGenModal(false)} className="text-zinc-400 hover:text-white">✕</button>
+              <button onClick={() => setShowGenModal(false)} className="text-xs text-[#767676] hover:text-[#F1F2F2]">[X]</button>
             </div>
-            <form onSubmit={handleGenerateSubmit} className="space-y-3 text-xs">
+            <form onSubmit={handleGenerateSubmit} className="space-y-3 text-xs font-mono">
               <div>
-                <label className="block text-zinc-300 mb-1">Engineering Domain</label>
+                <label className="block text-[#767676] mb-1 uppercase text-[10px]">ENGINEERING DOMAIN</label>
                 <select
                   value={genRole}
                   onChange={(e) => setGenRole(e.target.value)}
-                  className="w-full bg-zinc-950 border border-zinc-700 rounded p-2 text-zinc-100"
+                  className="w-full bg-[#08080A] border border-[#272727] p-2 text-[#F1F2F2]"
                 >
                   <option value="Distributed Systems">Distributed Systems (Consensus & Sharding)</option>
                   <option value="Frontend Core">Frontend Core (Canvas, WebGL & Windowing)</option>
@@ -547,11 +520,11 @@ export const AssessmentLab: React.FC<AssessmentLabProps> = ({
                 </select>
               </div>
               <div>
-                <label className="block text-zinc-300 mb-1">Seniority Target</label>
+                <label className="block text-[#767676] mb-1 uppercase text-[10px]">SENIORITY TARGET</label>
                 <select
                   value={genDifficulty}
                   onChange={(e) => setGenDifficulty(e.target.value)}
-                  className="w-full bg-zinc-950 border border-zinc-700 rounded p-2 text-zinc-100"
+                  className="w-full bg-[#08080A] border border-[#272727] p-2 text-[#F1F2F2]"
                 >
                   <option value="Junior">Junior Engineer</option>
                   <option value="Mid">Mid-Level Engineer</option>
@@ -560,31 +533,30 @@ export const AssessmentLab: React.FC<AssessmentLabProps> = ({
                 </select>
               </div>
               <div>
-                <label className="block text-zinc-300 mb-1">Specific Production Focus Area</label>
+                <label className="block text-[#767676] mb-1 uppercase text-[10px]">PRODUCTION FOCUS AREA</label>
                 <input
                   type="text"
                   value={genFocus}
                   onChange={(e) => setGenFocus(e.target.value)}
-                  placeholder="e.g. Memory pooling, zero-copy socket buffers, deadlock prevention"
-                  className="w-full bg-zinc-950 border border-zinc-700 rounded p-2 text-zinc-100"
+                  placeholder="e.g. Memory pooling, zero-copy buffers, lock-free ring buffer"
+                  className="w-full bg-[#08080A] border border-[#272727] p-2 text-[#F1F2F2]"
                   required
                 />
               </div>
-              <div className="flex justify-end gap-2 pt-2">
+              <div className="flex justify-end gap-2 pt-2 border-t border-[#202020]">
                 <button
                   type="button"
                   onClick={() => setShowGenModal(false)}
-                  className="px-4 py-2 bg-zinc-800 text-zinc-300 rounded font-medium"
+                  className="px-4 py-2 bg-[#0F0E12] text-[#767676] hover:text-[#F1F2F2] uppercase text-xs"
                 >
-                  Cancel
+                  [DISCARD]
                 </button>
                 <button
                   type="submit"
                   disabled={isGenerating}
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded font-medium flex items-center gap-1.5"
+                  className="px-4 py-2 bg-[#F56B2A] text-black font-semibold uppercase text-xs"
                 >
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>{isGenerating ? 'Synthesizing Challenge...' : 'Generate Challenge'}</span>
+                  {isGenerating ? '[SYNTHESIZING...]' : '[GENERATE CHALLENGE]'}
                 </button>
               </div>
             </form>

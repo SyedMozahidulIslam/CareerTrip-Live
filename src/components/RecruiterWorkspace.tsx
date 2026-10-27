@@ -1,25 +1,5 @@
 import React, { useState } from 'react';
 import { User, SkillItem, Project, RecruiterShortlist } from '../types';
-import {
-  Search,
-  Filter,
-  ShieldCheck,
-  Award,
-  Users,
-  Code2,
-  FileCode,
-  CheckCircle2,
-  Bookmark,
-  BookmarkCheck,
-  SlidersHorizontal,
-  ArrowRight,
-  Eye,
-  GitCommit,
-  ExternalLink,
-  Layers,
-  Sparkles,
-  X
-} from 'lucide-react';
 
 interface RecruiterWorkspaceProps {
   candidates: User[];
@@ -52,11 +32,8 @@ export const RecruiterWorkspace: React.FC<RecruiterWorkspaceProps> = ({
   const [noteText, setNoteText] = useState('');
   const [stageSelect, setStageSelect] = useState<RecruiterShortlist['stage']>('reviewing_evidence');
 
-  // Filter candidates
   const filteredCandidates = candidates.filter((c) => {
     if (c.role !== 'candidate') return false;
-
-    // Search query matching
     const query = searchQuery.toLowerCase().trim();
     const candSkills = allSkills[c.id] || [];
     const matchesSearch =
@@ -66,12 +43,8 @@ export const RecruiterWorkspace: React.FC<RecruiterWorkspaceProps> = ({
       c.targetRole.toLowerCase().includes(query) ||
       candSkills.some((s) => s.name.toLowerCase().includes(query));
 
-    // Tier filter
     const matchesTier = tierFilter === 'all' || c.verifiedTier === tierFilter;
-
-    // Score filter
     const matchesScore = c.overallScore >= minScore;
-
     return matchesSearch && matchesTier && matchesScore;
   });
 
@@ -102,291 +75,290 @@ export const RecruiterWorkspace: React.FC<RecruiterWorkspaceProps> = ({
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-      {/* Workspace Header */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-zinc-900 border border-zinc-800 rounded-xl p-5 shadow-sm">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold text-white tracking-tight">Recruiter Discovery Workspace</h1>
-            <span className="text-[10px] px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/30 font-semibold">
-              EVIDENCE-FIRST TALENT SOURCING
-            </span>
+    <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+      {/* Top Specification Strip */}
+      <div className="bg-[#000000] border border-[#272727]">
+        <div className="px-6 py-2 border-b border-[#272727] bg-[#0A0A0C] flex flex-wrap items-center justify-between font-mono text-[10px] text-[#767676]">
+          <div className="flex items-center gap-3">
+            <span className="text-[#F1F2F2]">RECRUITER WORKSPACE // SPEC-01.0</span>
+            <span>/</span>
+            <span>EVIDENCE-BASED SOURCING INTERFACE</span>
           </div>
-          <p className="text-xs text-zinc-300 mt-1">
-            Search candidates by verifiable code artifacts, evaluated consensus logic, and cryptographically signed endorsements.
-          </p>
+          <div className="flex items-center gap-3">
+            <span>INDEXED CANDIDATES: {filteredCandidates.length}</span>
+            <span>/</span>
+            <span className="text-[#F56B2A]">SHORTLISTED: {shortlists.length}</span>
+          </div>
         </div>
 
-        <div className="flex items-center gap-3">
-          {selectedForComparison.length > 0 && (
-            <button
-              onClick={() => setShowComparisonModal(true)}
-              className="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold flex items-center gap-2 transition-colors shadow-sm"
-            >
-              <SlidersHorizontal className="w-3.5 h-3.5" />
-              <span>Compare Candidates ({selectedForComparison.length}/3)</span>
-            </button>
-          )}
+        <div className="p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+          <div className="space-y-1">
+            <h1 className="text-2xl sm:text-3xl font-light text-[#F1F2F2] tracking-tight">
+              Recruiter Research Directory
+            </h1>
+            <p className="text-sm text-[#767676] font-mono">
+              Dense, structured technical search filtered by verified code repositories and audit trails.
+            </p>
+          </div>
 
-          <button
-            onClick={() => setShowShortlistDrawer(true)}
-            className="px-3.5 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 rounded-lg text-xs font-semibold flex items-center gap-2 transition-colors"
-          >
-            <BookmarkCheck className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Shortlisted ({shortlists.length})</span>
-          </button>
+          <div className="flex items-center gap-3">
+            {selectedForComparison.length > 0 && (
+              <button
+                onClick={() => setShowComparisonModal(true)}
+                className="px-3.5 py-2 bg-[#F56B2A] text-black font-mono text-xs font-semibold uppercase tracking-wider transition-colors shrink-0"
+              >
+                [COMPARE SELECTED ({selectedForComparison.length}/3)]
+              </button>
+            )}
+
+            <button
+              onClick={() => setShowShortlistDrawer(true)}
+              className="px-3.5 py-2 bg-[#0F0E12] hover:bg-[#F1F2F2] hover:text-[#000000] text-[#F1F2F2] border border-[#272727] font-mono text-xs uppercase tracking-wider transition-colors shrink-0"
+            >
+              [SHORTLIST PIPELINE ({shortlists.length})]
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Filter and Search Bar */}
-      <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 space-y-3 shadow-sm">
-        <div className="flex flex-col sm:flex-row gap-3">
-          <div className="relative flex-1">
-            <Search className="w-4 h-4 text-zinc-400 absolute left-3 top-3" />
-            <input
-              type="text"
-              placeholder="Search by skill (Raft, WebGL, CUDA), name, or target role..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-zinc-950 border border-zinc-800 rounded-lg pl-9 pr-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-indigo-500"
-            />
-          </div>
+      {/* Structured Technical Filter Bar */}
+      <div className="bg-[#08080A] border border-[#272727] p-4 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 font-mono text-xs">
+        <div className="flex-1 flex items-center gap-2 bg-[#000000] border border-[#202020] px-3 py-2">
+          <span className="text-[#767676] uppercase">SEARCH:</span>
+          <input
+            type="text"
+            placeholder="Type skill keyword (Raft, WebGL, CUDA), target role, or engineer name..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-transparent text-[#F1F2F2] placeholder-[#555555] focus:outline-none"
+          />
+        </div>
 
-          <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-2 bg-[#000000] border border-[#202020] px-3 py-1.5">
+            <span className="text-[#767676] uppercase text-[10px]">TIER:</span>
             <select
               value={tierFilter}
               onChange={(e) => setTierFilter(e.target.value)}
-              className="bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-zinc-300 focus:outline-none focus:border-indigo-500"
+              className="bg-transparent text-[#F1F2F2] focus:outline-none cursor-pointer"
             >
-              <option value="all">All Verification Tiers</option>
-              <option value="Evaluator Certified">Evaluator Certified</option>
-              <option value="Employer Verified">Employer Verified</option>
-              <option value="Peer Reviewed">Peer Reviewed</option>
-              <option value="Unverified">Unverified</option>
+              <option value="all">ALL VERIFIED TIERS</option>
+              <option value="Evaluator Certified">EVALUATOR CERTIFIED</option>
+              <option value="Employer Verified">EMPLOYER VERIFIED</option>
+              <option value="Peer Reviewed">PEER REVIEWED</option>
+              <option value="Unverified">UNVERIFIED CLAIMS</option>
             </select>
-
-            <div className="flex items-center gap-2 bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-zinc-400">
-              <span className="whitespace-nowrap font-mono">Min Score: {minScore}%</span>
-              <input
-                type="range"
-                min={50}
-                max={95}
-                value={minScore}
-                onChange={(e) => setMinScore(Number(e.target.value))}
-                className="w-20 accent-indigo-500"
-              />
-            </div>
           </div>
-        </div>
 
-        <div className="flex items-center justify-between text-xs text-zinc-400 pt-1">
-          <span>Found {filteredCandidates.length} verifiable candidate profiles</span>
-          <span className="text-[11px] text-zinc-500">Evidence Rooms verified via git diffs and test results</span>
+          <div className="flex items-center gap-2 bg-[#000000] border border-[#202020] px-3 py-1.5">
+            <span className="text-[#767676] uppercase text-[10px]">MIN SCORE: {minScore}%</span>
+            <input
+              type="range"
+              min={50}
+              max={95}
+              value={minScore}
+              onChange={(e) => setMinScore(Number(e.target.value))}
+              className="w-20 accent-[#F56B2A]"
+            />
+          </div>
         </div>
       </div>
 
-      {/* Candidates Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredCandidates.map((candidate) => {
-          const candSkills = allSkills[candidate.id] || [];
-          const candProjects = allProjects.filter((p) => p.userId === candidate.id);
-          const isShortlisted = shortlists.some((s) => s.candidateId === candidate.id);
-          const isCompared = selectedForComparison.includes(candidate.id);
+      {/* Dense Aligned Candidate Rows (Table Layout instead of generic cards) */}
+      <div className="border border-[#272727] bg-[#000000] overflow-x-auto">
+        <table className="w-full text-left font-mono text-xs border-collapse">
+          <thead>
+            <tr className="border-b border-[#272727] bg-[#0A0A0C] text-[10px] text-[#767676] uppercase tracking-wider">
+              <th className="py-3 px-4 w-12 text-center">CMP</th>
+              <th className="py-3 px-4">ENGINEER // IDENTIFIER</th>
+              <th className="py-3 px-4">TIER // SCORE</th>
+              <th className="py-3 px-4">VERIFIED SKILLS SPEC</th>
+              <th className="py-3 px-4">PRIMARY EVIDENCE ROOM</th>
+              <th className="py-3 px-4 text-right">ACTIONS</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-[#1C1C1F]">
+            {filteredCandidates.map((candidate) => {
+              const candSkills = allSkills[candidate.id] || [];
+              const candProjects = allProjects.filter((p) => p.userId === candidate.id);
+              const isShortlisted = shortlists.some((s) => s.candidateId === candidate.id);
+              const isCompared = selectedForComparison.includes(candidate.id);
 
-          return (
-            <div
-              key={candidate.id}
-              className={`bg-zinc-900 border rounded-xl p-5 space-y-4 shadow-sm flex flex-col justify-between transition-all ${
-                isCompared ? 'border-indigo-500 ring-1 ring-indigo-500/40' : 'border-zinc-800 hover:border-zinc-700'
-              }`}
-            >
-              <div className="space-y-3">
-                {/* Candidate Card Header */}
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={candidate.avatarUrl}
-                      alt={candidate.name}
-                      className="w-12 h-12 rounded-xl object-cover border border-zinc-700 shadow-sm"
+              return (
+                <tr
+                  key={candidate.id}
+                  className={`transition-colors ${
+                    isCompared ? 'bg-[#101014]' : 'hover:bg-[#070709]'
+                  }`}
+                >
+                  {/* Compare checkbox */}
+                  <td className="py-4 px-4 text-center">
+                    <input
+                      type="checkbox"
+                      checked={isCompared}
+                      onChange={() => toggleComparison(candidate.id)}
+                      className="accent-[#F56B2A] cursor-pointer"
                     />
-                    <div>
-                      <h3
-                        onClick={() => onSelectCandidate(candidate)}
-                        className="font-bold text-white text-sm hover:text-indigo-400 cursor-pointer transition-colors"
-                      >
-                        {candidate.name}
-                      </h3>
-                      <div className="text-[11px] text-zinc-400">@{candidate.handle}</div>
-                      <span className={`inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.2 rounded-full border mt-1 ${
-                        candidate.verifiedTier === 'Evaluator Certified'
-                          ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
-                          : candidate.verifiedTier === 'Employer Verified'
-                          ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/30'
-                          : candidate.verifiedTier === 'Peer Reviewed'
-                          ? 'bg-sky-500/10 text-sky-400 border-sky-500/30'
-                          : 'bg-amber-500/10 text-amber-400 border-amber-500/30'
-                      }`}>
-                        {candidate.verifiedTier}
-                      </span>
+                  </td>
+
+                  {/* Candidate Identity */}
+                  <td className="py-4 px-4 space-y-1">
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={candidate.avatarUrl}
+                        alt={candidate.name}
+                        className="w-9 h-9 object-cover border border-[#272727] grayscale"
+                      />
+                      <div>
+                        <div
+                          onClick={() => onSelectCandidate(candidate)}
+                          className="font-bold text-[#F1F2F2] hover:text-[#F56B2A] cursor-pointer text-sm"
+                        >
+                          {candidate.name}
+                        </div>
+                        <div className="text-[10px] text-[#767676]">
+                          @{candidate.handle} // {candidate.location}
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                    <div className="text-[11px] text-[#A0A2A4] font-sans line-clamp-1">
+                      {candidate.headline}
+                    </div>
+                  </td>
 
-                  <div className="text-right">
-                    <span className="text-[10px] text-zinc-400 block font-mono">Verified Score</span>
-                    <span className="font-mono text-base font-bold text-emerald-400">
-                      {candidate.overallScore}/100
-                    </span>
-                  </div>
-                </div>
+                  {/* Tier & Score */}
+                  <td className="py-4 px-4 space-y-1">
+                    <div className="font-bold text-sm text-[#F56B2A]">
+                      {candidate.overallScore}.0%
+                    </div>
+                    <div className="text-[10px] text-[#F1F2F2] uppercase tracking-wider">
+                      [{candidate.verifiedTier}]
+                    </div>
+                  </td>
 
-                <p className="text-xs text-zinc-300 line-clamp-2 leading-relaxed">
-                  {candidate.headline}
-                </p>
+                  {/* Skills Spec */}
+                  <td className="py-4 px-4 space-y-1">
+                    <div className="flex flex-wrap gap-1.5">
+                      {candSkills.slice(0, 3).map((s) => (
+                        <span
+                          key={s.id}
+                          className="text-[10px] px-1.5 py-0.5 bg-[#0A0A0D] border border-[#222225] text-[#D0D1D2]"
+                        >
+                          {s.name} {s.verifiedScore && <strong className="text-[#F56B2A]">({s.verifiedScore}%)</strong>}
+                        </span>
+                      ))}
+                      {candSkills.length > 3 && (
+                        <span className="text-[10px] text-[#767676] self-center">
+                          +{candSkills.length - 3} MORE
+                        </span>
+                      )}
+                    </div>
+                  </td>
 
-                {/* Verified Skills Tags */}
-                <div className="space-y-1.5 pt-1">
-                  <span className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider block">
-                    Verified Competencies
-                  </span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {candSkills.slice(0, 3).map((s) => (
-                      <span
-                        key={s.id}
-                        className="text-[10px] px-2 py-0.5 rounded bg-zinc-950 text-zinc-300 border border-zinc-800 flex items-center gap-1 font-mono"
+                  {/* Primary Project Evidence Room */}
+                  <td className="py-4 px-4 space-y-1">
+                    {candProjects[0] ? (
+                      <div
+                        onClick={() => onInspectProject(candProjects[0].id)}
+                        className="cursor-pointer group"
                       >
-                        {s.name}
-                        {s.verifiedScore && <strong className="text-emerald-400">({s.verifiedScore}%)</strong>}
-                      </span>
-                    ))}
-                    {candSkills.length > 3 && (
-                      <span className="text-[10px] px-1.5 py-0.5 text-zinc-500">
-                        +{candSkills.length - 3} more
-                      </span>
+                        <div className="text-[#F1F2F2] group-hover:text-[#F56B2A] font-semibold text-xs truncate max-w-[220px]">
+                          {candProjects[0].title}
+                        </div>
+                        <div className="text-[10px] text-[#767676]">
+                          {candProjects[0].evidenceFiles.length} FILES // {candProjects[0].versionHistory.length} REVS
+                        </div>
+                      </div>
+                    ) : (
+                      <span className="text-[#767676] text-[10px]">NO ROOMS</span>
                     )}
-                  </div>
-                </div>
+                  </td>
 
-                {/* Evidence Rooms Preview */}
-                <div className="bg-zinc-950/70 p-2.5 rounded-lg border border-zinc-800/80 space-y-1.5 text-xs">
-                  <span className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider block">
-                    Active Evidence Rooms ({candProjects.length})
-                  </span>
-                  {candProjects.slice(0, 2).map((p) => (
-                    <div
-                      key={p.id}
-                      onClick={() => onInspectProject(p.id)}
-                      className="flex items-center justify-between text-zinc-300 hover:text-indigo-400 cursor-pointer pt-0.5 transition-colors"
+                  {/* Action Buttons */}
+                  <td className="py-4 px-4 text-right space-x-2">
+                    <button
+                      onClick={() => handleOpenShortlistModal(candidate.id)}
+                      className={`px-2.5 py-1 text-[10px] uppercase font-semibold border transition-colors ${
+                        isShortlisted
+                          ? 'border-[#F56B2A] text-[#F56B2A] bg-[#000000]'
+                          : 'border-[#272727] text-[#767676] hover:text-[#F1F2F2] bg-[#0F0E12]'
+                      }`}
                     >
-                      <span className="truncate font-medium text-[11px]">{p.title}</span>
-                      <span className="text-[10px] text-zinc-500 font-mono whitespace-nowrap pl-2">
-                        {p.evidenceFiles.length} artifacts →
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
+                      {isShortlisted ? '[SHORTLISTED]' : '[SHORTLIST]'}
+                    </button>
 
-              {/* Bottom Actions */}
-              <div className="pt-3 border-t border-zinc-800 flex items-center justify-between text-xs">
-                <label className="flex items-center gap-1.5 text-zinc-400 hover:text-zinc-200 cursor-pointer text-[11px]">
-                  <input
-                    type="checkbox"
-                    checked={isCompared}
-                    onChange={() => toggleComparison(candidate.id)}
-                    className="rounded bg-zinc-950 border-zinc-700 text-indigo-600 focus:ring-0"
-                  />
-                  <span>Compare</span>
-                </label>
-
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => handleOpenShortlistModal(candidate.id)}
-                    className={`px-2.5 py-1 rounded text-xs font-medium flex items-center gap-1 transition-colors ${
-                      isShortlisted
-                        ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
-                        : 'bg-zinc-800 hover:bg-zinc-700 text-zinc-300'
-                    }`}
-                  >
-                    <Bookmark className="w-3 h-3" />
-                    <span>{isShortlisted ? 'Shortlisted' : 'Shortlist'}</span>
-                  </button>
-
-                  <button
-                    onClick={() => onSelectCandidate(candidate)}
-                    className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded text-xs font-semibold flex items-center gap-1 transition-colors"
-                  >
-                    <span>View Evidence</span>
-                    <ArrowRight className="w-3 h-3" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          );
-        })}
+                    <button
+                      onClick={() => onSelectCandidate(candidate)}
+                      className="px-2.5 py-1 text-[10px] uppercase font-semibold bg-[#F1F2F2] hover:bg-[#ffffff] text-black transition-colors"
+                    >
+                      [DOSSIER →]
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
 
       {/* Candidate Comparison Modal Matrix */}
       {showComparisonModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4">
-          <div className="bg-zinc-900 border border-zinc-800 rounded-xl max-w-5xl w-full p-6 space-y-5 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4">
+          <div className="bg-[#000000] border border-[#272727] max-w-5xl w-full p-6 space-y-5 font-mono text-xs max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-[#272727] pb-3">
               <div>
-                <h3 className="text-base font-bold text-white flex items-center gap-2">
-                  <SlidersHorizontal className="w-4 h-4 text-indigo-400" />
-                  Candidate Side-by-Side Comparison Matrix
+                <h3 className="text-xs font-bold text-[#F1F2F2] uppercase tracking-wider">
+                  CANDIDATE COMPARISON MATRIX // SIDE-BY-SIDE AUDIT
                 </h3>
-                <p className="text-xs text-zinc-400">
-                  Compare verified score dimensions, evidence artifact density, and audit trail.
+                <p className="text-[10px] text-[#767676]">
+                  Strict technical parameter alignment across verified competencies.
                 </p>
               </div>
-              <button onClick={() => setShowComparisonModal(false)} className="text-zinc-400 hover:text-white">✕</button>
+              <button onClick={() => setShowComparisonModal(false)} className="text-[#767676] hover:text-[#F1F2F2]">[X]</button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {comparedCandidates.map((cand) => {
                 const cSkills = allSkills[cand.id] || [];
                 const cProjects = allProjects.filter((p) => p.userId === cand.id);
+
                 return (
-                  <div key={cand.id} className="bg-zinc-950 p-4 rounded-xl border border-zinc-800 space-y-4 text-xs">
-                    <div className="flex items-center gap-3 pb-3 border-b border-zinc-800">
-                      <img src={cand.avatarUrl} alt={cand.name} className="w-12 h-12 rounded-xl object-cover" />
+                  <div key={cand.id} className="border border-[#202020] bg-[#08080A] p-4 space-y-3">
+                    <div className="flex items-center gap-3 pb-3 border-b border-[#1C1C1F]">
+                      <img src={cand.avatarUrl} alt={cand.name} className="w-10 h-10 object-cover border border-[#272727] grayscale" />
                       <div>
-                        <div className="font-bold text-white text-sm">{cand.name}</div>
-                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                          {cand.verifiedTier}
+                        <div className="font-bold text-[#F1F2F2] text-sm">{cand.name}</div>
+                        <span className="text-[10px] text-[#F56B2A]">
+                          [{cand.verifiedTier}]
                         </span>
                       </div>
                     </div>
 
-                    <div className="space-y-2">
-                      <div className="flex justify-between py-1 border-b border-zinc-900">
-                        <span className="text-zinc-400">Overall Verified Score</span>
-                        <strong className="text-emerald-400 font-mono">{cand.overallScore}/100</strong>
+                    <div className="space-y-1.5 text-[11px]">
+                      <div className="flex justify-between py-1 border-b border-[#141416]">
+                        <span className="text-[#767676]">VERIFIED SCORE</span>
+                        <strong className="text-[#F56B2A]">{cand.overallScore}%</strong>
                       </div>
-                      <div className="flex justify-between py-1 border-b border-zinc-900">
-                        <span className="text-zinc-400">Target Role</span>
-                        <span className="text-zinc-200">{cand.targetRole}</span>
+                      <div className="flex justify-between py-1 border-b border-[#141416]">
+                        <span className="text-[#767676]">TARGET ROLE</span>
+                        <span className="text-[#F1F2F2] truncate max-w-[140px]">{cand.targetRole}</span>
                       </div>
-                      <div className="flex justify-between py-1 border-b border-zinc-900">
-                        <span className="text-zinc-400">Experience</span>
-                        <span className="text-zinc-200">{cand.yearsExperience} Years</span>
+                      <div className="flex justify-between py-1 border-b border-[#141416]">
+                        <span className="text-[#767676]">EXPERIENCE</span>
+                        <span className="text-[#F1F2F2]">{cand.yearsExperience} YRS</span>
                       </div>
-                      <div className="flex justify-between py-1 border-b border-zinc-900">
-                        <span className="text-zinc-400">Evidence Rooms</span>
-                        <span className="text-zinc-200">{cProjects.length} Projects</span>
-                      </div>
-                      <div className="flex justify-between py-1 border-b border-zinc-900">
-                        <span className="text-zinc-400">Evidence Files Count</span>
-                        <span className="text-zinc-200">{cProjects.reduce((a, b) => a + b.evidenceFiles.length, 0)} Artifacts</span>
+                      <div className="flex justify-between py-1 border-b border-[#141416]">
+                        <span className="text-[#767676]">EVIDENCE ROOMS</span>
+                        <span className="text-[#F1F2F2]">{cProjects.length} ROOMS</span>
                       </div>
                     </div>
 
-                    <div className="space-y-1.5 pt-1">
-                      <span className="text-[10px] uppercase font-semibold text-zinc-400 block">Top Verified Skills</span>
+                    <div className="space-y-1 pt-1">
+                      <span className="text-[10px] text-[#767676] uppercase block">TOP VERIFIED COMPETENCIES:</span>
                       {cSkills.map((s) => (
-                        <div key={s.id} className="bg-zinc-900 p-1.5 rounded flex justify-between font-mono text-[11px]">
-                          <span className="text-zinc-300 truncate">{s.name}</span>
-                          <span className="text-emerald-400">{s.verifiedScore || s.proficiency * 20}%</span>
+                        <div key={s.id} className="p-1.5 bg-[#000000] border border-[#1A1A1D] flex justify-between text-[10px]">
+                          <span className="text-[#D0D1D2] truncate">{s.name}</span>
+                          <span className="text-[#F56B2A] font-bold">{s.verifiedScore || s.proficiency * 20}%</span>
                         </div>
                       ))}
                     </div>
@@ -396,9 +368,9 @@ export const RecruiterWorkspace: React.FC<RecruiterWorkspaceProps> = ({
                         setShowComparisonModal(false);
                         onSelectCandidate(cand);
                       }}
-                      className="w-full py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded text-xs font-semibold transition-colors mt-2"
+                      className="w-full py-2 bg-[#F1F2F2] hover:bg-[#ffffff] text-black uppercase font-semibold text-xs transition-colors mt-2"
                     >
-                      Inspect Full Portfolio
+                      [INSPECT FULL DOSSIER]
                     </button>
                   </div>
                 );
@@ -408,60 +380,56 @@ export const RecruiterWorkspace: React.FC<RecruiterWorkspaceProps> = ({
         </div>
       )}
 
-      {/* Recruiter Shortlist Modal / Drawer */}
+      {/* Recruiter Shortlist Pipeline Modal */}
       {showShortlistDrawer && (
-        <div className="fixed inset-0 z-50 flex items-center justify-end bg-black/60">
-          <div className="bg-zinc-900 border-l border-zinc-800 w-full max-w-md h-full p-6 space-y-5 overflow-y-auto shadow-2xl">
-            <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
-              <div className="flex items-center gap-2">
-                <BookmarkCheck className="w-5 h-5 text-emerald-400" />
-                <h3 className="text-base font-bold text-white">Recruiter Shortlist ({shortlists.length})</h3>
-              </div>
-              <button onClick={() => setShowShortlistDrawer(false)} className="text-zinc-400 hover:text-white">✕</button>
+        <div className="fixed inset-0 z-50 flex items-center justify-end bg-black/80">
+          <div className="bg-[#000000] border-l border-[#272727] w-full max-w-md h-full p-6 space-y-4 font-mono text-xs overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-[#272727] pb-3">
+              <h3 className="text-xs font-bold text-[#F1F2F2] uppercase tracking-wider">
+                SHORTLIST PIPELINE ({shortlists.length})
+              </h3>
+              <button onClick={() => setShowShortlistDrawer(false)} className="text-[#767676] hover:text-[#F1F2F2]">[X]</button>
             </div>
 
             {shortlists.length === 0 ? (
-              <p className="text-xs text-zinc-500 text-center py-8">No candidates shortlisted yet.</p>
+              <p className="text-[#767676] text-center py-8">NO CANDIDATES SHORTLISTED YET</p>
             ) : (
               <div className="space-y-3">
                 {shortlists.map((sl) => {
                   const cand = candidates.find((c) => c.id === sl.candidateId);
                   if (!cand) return null;
                   return (
-                    <div key={sl.id} className="bg-zinc-950 p-3.5 rounded-lg border border-zinc-800 space-y-2 text-xs">
+                    <div key={sl.id} className="p-3.5 border border-[#202020] bg-[#08080A] space-y-2">
                       <div className="flex items-center justify-between">
-                        <div className="font-bold text-zinc-200">{cand.name}</div>
-                        <span className="font-mono text-emerald-400 font-semibold">{sl.matchScore}% Match</span>
+                        <strong className="text-[#F1F2F2] text-sm">{cand.name}</strong>
+                        <span className="text-[#F56B2A]">{sl.matchScore}% MATCH</span>
                       </div>
-                      <div className="text-[11px] text-zinc-400">{cand.headline}</div>
-
-                      <div className="flex items-center gap-2">
-                        <span className="text-[10px] px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 font-mono uppercase">
-                          Stage: {sl.stage.replace('_', ' ')}
-                        </span>
+                      <div className="text-[10px] text-[#767676]">{cand.headline}</div>
+                      <div className="text-[10px] px-2 py-0.5 bg-[#000000] border border-[#272727] text-[#D0D1D2] uppercase inline-block">
+                        STAGE: {sl.stage.replace('_', ' ')}
                       </div>
 
                       {sl.notes && (
-                        <p className="text-[11px] text-zinc-300 italic bg-zinc-900/60 p-2 rounded border border-zinc-800">
+                        <p className="text-[11px] text-[#767676] italic font-sans p-2 border border-[#1A1A1D] bg-[#050507]">
                           "{sl.notes}"
                         </p>
                       )}
 
-                      <div className="flex justify-between items-center pt-2 border-t border-zinc-800/80">
+                      <div className="flex justify-between items-center pt-2 border-t border-[#1C1C1F]">
                         <button
                           onClick={() => {
                             setShowShortlistDrawer(false);
                             onSelectCandidate(cand);
                           }}
-                          className="text-xs text-indigo-400 hover:text-indigo-300 font-medium"
+                          className="text-[#F1F2F2] hover:text-[#F56B2A] uppercase"
                         >
-                          View Evidence →
+                          [OPEN DOSSIER →]
                         </button>
                         <button
                           onClick={() => onRemoveFromShortlist(cand.id)}
-                          className="text-xs text-rose-400 hover:text-rose-300"
+                          className="text-[#767676] hover:text-[#F56B2A] uppercase"
                         >
-                          Remove
+                          [REMOVE]
                         </button>
                       </div>
                     </div>
@@ -475,50 +443,52 @@ export const RecruiterWorkspace: React.FC<RecruiterWorkspaceProps> = ({
 
       {/* Edit Shortlist Notes Modal */}
       {editingNotesId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-          <div className="bg-zinc-900 border border-zinc-800 rounded-xl max-w-md w-full p-6 space-y-4 shadow-xl">
-            <h3 className="text-base font-bold text-white">Update Shortlist Notes & Stage</h3>
-            <div className="space-y-3 text-xs">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4">
+          <div className="bg-[#000000] border border-[#272727] max-w-md w-full p-6 space-y-4 font-mono text-xs">
+            <h3 className="font-bold text-[#F1F2F2] uppercase tracking-wider text-xs">
+              [UPDATE SHORTLIST STAGE & NOTES]
+            </h3>
+            <div className="space-y-3">
               <div>
-                <label className="block text-zinc-400 mb-1">Recruitment Pipeline Stage</label>
+                <label className="block text-[#767676] mb-1 uppercase text-[10px]">PIPELINE STAGE</label>
                 <select
                   value={stageSelect}
                   onChange={(e) => setStageSelect(e.target.value as any)}
-                  className="w-full bg-zinc-950 border border-zinc-700 rounded p-2 text-zinc-100"
+                  className="w-full bg-[#08080A] border border-[#272727] p-2 text-[#F1F2F2]"
                 >
-                  <option value="discovered">Discovered</option>
-                  <option value="reviewing_evidence">Reviewing Project Evidence</option>
-                  <option value="shortlisted">Shortlisted</option>
-                  <option value="interview_scheduled">Technical Interview Scheduled</option>
-                  <option value="rejected">Archived</option>
+                  <option value="discovered">DISCOVERED</option>
+                  <option value="reviewing_evidence">REVIEWING PROJECT EVIDENCE</option>
+                  <option value="shortlisted">SHORTLISTED</option>
+                  <option value="interview_scheduled">TECHNICAL INTERVIEW SCHEDULED</option>
+                  <option value="rejected">ARCHIVED</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-zinc-400 mb-1">Recruiter Evaluation Note</label>
+                <label className="block text-[#767676] mb-1 uppercase text-[10px]">EVALUATION NOTE</label>
                 <textarea
                   rows={3}
                   value={noteText}
                   onChange={(e) => setNoteText(e.target.value)}
-                  placeholder="e.g. Strong consensus background, validated Jepsen partition test suite."
-                  className="w-full bg-zinc-950 border border-zinc-700 rounded p-2 text-zinc-100"
+                  placeholder="Record observations regarding test suite, architecture, or consensus logic..."
+                  className="w-full bg-[#08080A] border border-[#272727] p-2 text-[#F1F2F2] font-sans"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-2">
+              <div className="flex justify-end gap-2 pt-2 border-t border-[#202020]">
                 <button
                   type="button"
                   onClick={() => setEditingNotesId(null)}
-                  className="px-4 py-2 bg-zinc-800 text-zinc-300 rounded"
+                  className="px-4 py-2 bg-[#0F0E12] text-[#767676] uppercase text-xs"
                 >
-                  Cancel
+                  [DISCARD]
                 </button>
                 <button
                   type="button"
                   onClick={() => handleSaveShortlistNote(editingNotesId)}
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded font-medium"
+                  className="px-4 py-2 bg-[#F56B2A] text-black font-semibold uppercase text-xs"
                 >
-                  Save Shortlist Note
+                  [SAVE PIPELINE RECORD]
                 </button>
               </div>
             </div>

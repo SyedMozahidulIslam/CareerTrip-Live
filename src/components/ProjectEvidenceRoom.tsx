@@ -1,24 +1,5 @@
 import React, { useState } from 'react';
 import { Project, EvidenceFile, ProjectVersion } from '../types';
-import {
-  Code2,
-  GitBranch,
-  GitCommit,
-  Layers,
-  FileCode,
-  ShieldCheck,
-  CheckCircle2,
-  ExternalLink,
-  Github,
-  Plus,
-  ArrowLeft,
-  Calendar,
-  Sparkles,
-  Cpu,
-  BarChart2,
-  Terminal,
-  FileText
-} from 'lucide-react';
 
 interface ProjectEvidenceRoomProps {
   project: Project;
@@ -33,7 +14,7 @@ export const ProjectEvidenceRoom: React.FC<ProjectEvidenceRoomProps> = ({
   onAddEvidence,
   onAddVersion,
 }) => {
-  const [activeTab, setActiveTab] = useState<'architecture' | 'files' | 'versions' | 'contributions'>('files');
+  const [activeTab, setActiveTab] = useState<'files' | 'architecture' | 'versions' | 'contributions'>('files');
   const [selectedFileId, setSelectedFileId] = useState<string>(project.evidenceFiles[0]?.id || '');
   const [showAddEvidenceModal, setShowAddEvidenceModal] = useState(false);
   const [showAddVersionModal, setShowAddVersionModal] = useState(false);
@@ -84,166 +65,151 @@ export const ProjectEvidenceRoom: React.FC<ProjectEvidenceRoomProps> = ({
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-      {/* Back button and breadcrumb */}
-      <div className="flex items-center justify-between">
+    <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+      {/* Top Breadcrumb & Controls */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[#272727] pb-4">
         <button
           onClick={onBack}
-          className="text-xs font-medium text-zinc-400 hover:text-white flex items-center gap-1.5 transition-colors"
+          className="font-mono text-xs text-[#767676] hover:text-[#F1F2F2] flex items-center gap-1.5 uppercase tracking-wider transition-colors"
         >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Back to Portfolio</span>
+          <span>[← RETURN TO DOSSIER]</span>
         </button>
+
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowAddVersionModal(true)}
-            className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-colors"
+            className="px-3 py-1.5 bg-[#0F0E12] hover:bg-[#F1F2F2] hover:text-[#000000] text-[#F1F2F2] border border-[#272727] font-mono text-xs uppercase tracking-wider transition-colors"
           >
-            <GitCommit className="w-3.5 h-3.5 text-sky-400" />
-            <span>Publish Revision</span>
+            [PUBLISH REVISION]
           </button>
           <button
             onClick={() => setShowAddEvidenceModal(true)}
-            className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-sm"
+            className="px-3.5 py-1.5 bg-[#F56B2A] hover:bg-[#ff7b3d] text-black font-mono text-xs font-semibold uppercase tracking-wider transition-colors"
           >
-            <Plus className="w-3.5 h-3.5" />
-            <span>Upload Evidence Artifact</span>
+            [+ UPLOAD ARTIFACT]
           </button>
         </div>
       </div>
 
-      {/* Evidence Room Header */}
-      <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 shadow-sm space-y-4">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2.5">
-              <span className="text-xs px-2 py-0.5 rounded bg-zinc-800 text-zinc-400 font-mono">
-                ROOM ID: {project.id.toUpperCase()}
-              </span>
-              <span className="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-semibold flex items-center gap-1">
-                <ShieldCheck className="w-3 h-3" />
-                {project.verifiedStatus}
-              </span>
+      {/* Room Specification Banner */}
+      <div className="bg-[#000000] border border-[#272727]">
+        <div className="px-6 py-2 border-b border-[#272727] bg-[#0A0A0C] flex flex-wrap items-center justify-between font-mono text-[10px] text-[#767676]">
+          <div className="flex items-center gap-3">
+            <span className="text-[#F1F2F2]">ROOM SPEC // {project.id.toUpperCase()}</span>
+            <span>/</span>
+            <span>VERIFICATION STATUS: {project.verifiedStatus.toUpperCase()}</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <span>REPOSITORY ACCESS: READ-ONLY AUDIT</span>
+            <span>/</span>
+            <span className="text-[#F56B2A]">ACTIVE REVISION: {project.versionHistory[0]?.version}</span>
+          </div>
+        </div>
+
+        <div className="p-6 sm:p-8 space-y-4">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+            <div className="space-y-1">
+              <h1 className="text-2xl sm:text-3xl font-light text-[#F1F2F2] tracking-tight">
+                {project.title}
+              </h1>
+              <p className="text-sm text-[#767676] font-mono">
+                {project.tagline}
+              </p>
             </div>
-            <h1 className="text-2xl font-bold text-white tracking-tight">{project.title}</h1>
-            <p className="text-sm text-zinc-300 max-w-3xl">{project.tagline}</p>
+
+            <div className="flex items-center gap-3">
+              {project.repoUrl && (
+                <a
+                  href={project.repoUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-3 py-1.5 bg-[#0F0E12] hover:bg-[#F1F2F2] hover:text-[#000000] text-[#F1F2F2] border border-[#272727] font-mono text-xs uppercase tracking-wider transition-colors"
+                >
+                  [SOURCE REPO ↗]
+                </a>
+              )}
+              {project.liveUrl && (
+                <a
+                  href={project.liveUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-3 py-1.5 bg-[#0F0E12] hover:bg-[#F56B2A] hover:text-black text-[#F56B2A] border border-[#F56B2A] font-mono text-xs font-semibold uppercase tracking-wider transition-colors"
+                >
+                  [LIVE DEMO ↗]
+                </a>
+              )}
+            </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            {project.repoUrl && (
-              <a
-                href={project.repoUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-colors"
+          {/* Tech Stack Strip */}
+          <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-[#1C1C1F] font-mono text-[10px]">
+            <span className="text-[#767676] uppercase tracking-wider mr-1">TECH STACK:</span>
+            {project.techStack.map((tech) => (
+              <span
+                key={tech}
+                className="px-2 py-0.5 bg-[#08080A] border border-[#272727] text-[#D0D1D2]"
               >
-                <Github className="w-3.5 h-3.5" />
-                <span>Source Repository</span>
-              </a>
-            )}
-            {project.liveUrl && (
-              <a
-                href={project.liveUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-colors"
-              >
-                <ExternalLink className="w-3.5 h-3.5 text-indigo-400" />
-                <span>Live Demonstration</span>
-              </a>
-            )}
+                {tech}
+              </span>
+            ))}
           </div>
-        </div>
-
-        {/* Tech Stack Bar */}
-        <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-zinc-800">
-          <span className="text-xs font-semibold text-zinc-400 mr-2">Core Tech:</span>
-          {project.techStack.map((tech) => (
-            <span key={tech} className="text-xs px-2.5 py-0.5 rounded bg-zinc-950 text-zinc-200 border border-zinc-800 font-mono">
-              {tech}
-            </span>
-          ))}
         </div>
       </div>
 
-      {/* Tabs Bar */}
-      <div className="flex items-center space-x-2 border-b border-zinc-800 pb-2">
-        <button
-          onClick={() => setActiveTab('files')}
-          className={`px-4 py-2 text-xs font-semibold rounded-lg flex items-center gap-2 transition-colors ${
-            activeTab === 'files'
-              ? 'bg-zinc-800 text-white border border-zinc-700'
-              : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40'
-          }`}
-        >
-          <FileCode className="w-4 h-4 text-sky-400" />
-          <span>Evidence Artifacts & Code ({project.evidenceFiles.length})</span>
-        </button>
-        <button
-          onClick={() => setActiveTab('architecture')}
-          className={`px-4 py-2 text-xs font-semibold rounded-lg flex items-center gap-2 transition-colors ${
-            activeTab === 'architecture'
-              ? 'bg-zinc-800 text-white border border-zinc-700'
-              : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40'
-          }`}
-        >
-          <Cpu className="w-4 h-4 text-indigo-400" />
-          <span>Architecture & Problem Formulation</span>
-        </button>
-        <button
-          onClick={() => setActiveTab('versions')}
-          className={`px-4 py-2 text-xs font-semibold rounded-lg flex items-center gap-2 transition-colors ${
-            activeTab === 'versions'
-              ? 'bg-zinc-800 text-white border border-zinc-700'
-              : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40'
-          }`}
-        >
-          <GitBranch className="w-4 h-4 text-emerald-400" />
-          <span>Version History & Diffs ({project.versionHistory.length})</span>
-        </button>
-        <button
-          onClick={() => setActiveTab('contributions')}
-          className={`px-4 py-2 text-xs font-semibold rounded-lg flex items-center gap-2 transition-colors ${
-            activeTab === 'contributions'
-              ? 'bg-zinc-800 text-white border border-zinc-700'
-              : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40'
-          }`}
-        >
-          <ShieldCheck className="w-4 h-4 text-amber-400" />
-          <span>Verified Contributions ({project.keyContributions.length})</span>
-        </button>
+      {/* Numbered Tab Navigation */}
+      <div className="flex items-stretch border-b border-[#272727] overflow-x-auto bg-[#070709] divide-x divide-[#272727]">
+        {[
+          { id: 'files', num: '03.1', label: `ARTIFACTS & CODE (${project.evidenceFiles.length})` },
+          { id: 'architecture', num: '03.2', label: 'ARCHITECTURE SPEC' },
+          { id: 'versions', num: '03.3', label: `REVISION LOGS (${project.versionHistory.length})` },
+          { id: 'contributions', num: '03.4', label: `VERIFIED CONTRIBUTIONS (${project.keyContributions.length})` },
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id as any)}
+            className={`px-4 py-2.5 font-mono text-xs uppercase tracking-wider transition-colors flex items-center gap-2 whitespace-nowrap ${
+              activeTab === tab.id
+                ? 'bg-[#000000] text-[#F1F2F2] border-t-2 border-t-[#F56B2A]'
+                : 'text-[#767676] hover:text-[#F1F2F2] hover:bg-[#0B0B0E]'
+            }`}
+          >
+            <span className="text-[10px] text-[#555555]">{tab.num}</span>
+            <span>{tab.label}</span>
+          </button>
+        ))}
       </div>
 
-      {/* Tab 1: Artifacts & Code Explorer */}
+      {/* Tab 1: Artifacts & Code Viewer */}
       {activeTab === 'files' && (
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* File sidebar */}
-          <div className="lg:col-span-1 space-y-2">
-            <span className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider block px-1">
-              Select Evidence Artifact
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* File Index Sidebar (4 cols) */}
+          <div className="lg:col-span-4 space-y-2">
+            <span className="font-mono text-[10px] text-[#767676] uppercase tracking-wider block px-1">
+              INDEX // EVIDENCE ARTIFACTS
             </span>
-            <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-2 space-y-1">
+            <div className="border border-[#272727] bg-[#000000] divide-y divide-[#1C1C1F]">
               {project.evidenceFiles.length === 0 ? (
-                <div className="p-4 text-xs text-zinc-500 text-center">No evidence files uploaded yet.</div>
+                <div className="p-6 font-mono text-xs text-[#767676] text-center">
+                  NO ARTIFACTS ATTACHED
+                </div>
               ) : (
-                project.evidenceFiles.map((file) => (
+                project.evidenceFiles.map((file, idx) => (
                   <button
                     key={file.id}
                     onClick={() => setSelectedFileId(file.id)}
-                    className={`w-full text-left p-2.5 rounded-lg text-xs font-medium transition-colors flex items-start gap-2.5 ${
+                    className={`w-full text-left p-3.5 transition-colors flex flex-col gap-1 ${
                       file.id === (currentFile?.id || '')
-                        ? 'bg-indigo-600/20 text-indigo-300 border border-indigo-500/30'
-                        : 'text-zinc-300 hover:bg-zinc-800'
+                        ? 'bg-[#0F0E12] border-l-2 border-l-[#F56B2A]'
+                        : 'hover:bg-[#08080A]'
                     }`}
                   >
-                    {file.type === 'benchmark' ? (
-                      <BarChart2 className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
-                    ) : (
-                      <Terminal className="w-4 h-4 text-sky-400 flex-shrink-0 mt-0.5" />
-                    )}
-                    <div className="overflow-hidden">
-                      <div className="truncate font-mono font-semibold">{file.name}</div>
-                      <div className="text-[10px] text-zinc-400 truncate capitalize">{file.type} · {file.language || 'text'}</div>
+                    <div className="flex items-center justify-between font-mono text-xs">
+                      <span className="text-[#F1F2F2] font-semibold truncate">{file.name}</span>
+                      <span className="text-[10px] text-[#F56B2A] uppercase">{file.type}</span>
+                    </div>
+                    <div className="font-mono text-[10px] text-[#767676] flex items-center justify-between">
+                      <span>LANG: {file.language || 'RAW'}</span>
+                      <span>FILE_0{idx + 1}</span>
                     </div>
                   </button>
                 ))
@@ -251,74 +217,70 @@ export const ProjectEvidenceRoom: React.FC<ProjectEvidenceRoomProps> = ({
             </div>
           </div>
 
-          {/* Code Viewer Panel */}
-          <div className="lg:col-span-3 space-y-4">
+          {/* Code Viewer Panel (8 cols) */}
+          <div className="lg:col-span-8 space-y-4">
             {currentFile ? (
-              <div className="bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden shadow-md">
-                <div className="bg-zinc-900 px-4 py-3 border-b border-zinc-800 flex items-center justify-between">
+              <div className="border border-[#272727] bg-[#050507]">
+                {/* File Header */}
+                <div className="px-4 py-2.5 border-b border-[#272727] bg-[#0A0A0C] flex items-center justify-between font-mono text-xs">
                   <div className="flex items-center gap-2">
-                    <FileCode className="w-4 h-4 text-indigo-400" />
-                    <span className="font-mono text-xs font-semibold text-zinc-200">{currentFile.name}</span>
-                    <span className="text-[10px] px-2 py-0.5 rounded bg-zinc-800 text-zinc-400 font-mono uppercase">
-                      {currentFile.language || 'text'}
-                    </span>
+                    <span className="text-[#F56B2A]">SOURCE:</span>
+                    <span className="text-[#F1F2F2] font-semibold">{currentFile.name}</span>
+                    <span className="text-[10px] text-[#767676] uppercase">[{currentFile.language}]</span>
                   </div>
-                  <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-medium">
-                    Verified Artifact
+                  <span className="text-[10px] text-[#767676] uppercase">
+                    INTEGRITY CHECKED // AUDITED
                   </span>
                 </div>
 
-                {/* Explanation block */}
+                {/* Technical Rationale Bar */}
                 {currentFile.explanation && (
-                  <div className="px-4 py-2.5 bg-zinc-900/40 border-b border-zinc-800/80 text-xs text-zinc-300 flex items-start gap-2">
-                    <Sparkles className="w-3.5 h-3.5 text-amber-400 flex-shrink-0 mt-0.5" />
-                    <div>
-                      <strong className="text-zinc-200">Architectural Rationale: </strong>
-                      {currentFile.explanation}
-                    </div>
+                  <div className="px-4 py-3 border-b border-[#202020] bg-[#08080A] font-mono text-xs text-[#D0D1D2]">
+                    <strong className="text-[#F56B2A] uppercase mr-1">RATIONALE:</strong>
+                    {currentFile.explanation}
                   </div>
                 )}
 
-                {/* Raw source display with line numbers */}
-                <pre className="p-4 overflow-x-auto text-xs font-mono text-zinc-200 bg-zinc-950 leading-relaxed max-h-[500px]">
+                {/* Preformatted Code Content */}
+                <pre className="p-5 overflow-x-auto font-mono text-xs text-[#F1F2F2] bg-[#000000] leading-relaxed max-h-[550px]">
                   {currentFile.contentOrUrl}
                 </pre>
               </div>
             ) : (
-              <div className="p-12 text-center text-zinc-500 text-xs bg-zinc-900 border border-zinc-800 rounded-xl">
-                Select an evidence file or click "Upload Evidence Artifact" above.
+              <div className="p-12 text-center font-mono text-xs text-[#767676] border border-[#272727]">
+                SELECT AN ARTIFACT FROM THE DIRECTORY
               </div>
             )}
           </div>
         </div>
       )}
 
-      {/* Tab 2: Architecture & Problem Formulation */}
+      {/* Tab 2: Architecture Specification */}
       {activeTab === 'architecture' && (
-        <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 space-y-6">
-          <div>
-            <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-2">
-              Problem Statement & System Constraints
-            </h3>
-            <div className="bg-zinc-950/70 p-4 rounded-lg border border-zinc-800 text-zinc-200 text-sm leading-relaxed">
-              {project.problemStatement || 'Detailed problem formulation.'}
+        <div className="bg-[#000000] border border-[#272727] p-6 sm:p-8 space-y-6">
+          <div className="space-y-2">
+            <span className="font-mono text-[10px] text-[#F56B2A] uppercase tracking-wider block">
+              SPEC 01 // PROBLEM STATEMENT & SYSTEM CONSTRAINTS
+            </span>
+            <div className="p-5 border border-[#202020] bg-[#08080A] text-sm text-[#D0D1D2] leading-relaxed">
+              {project.problemStatement}
             </div>
           </div>
 
-          <div>
-            <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-2">
-              System Architecture & Implementation Approach
-            </h3>
-            <div className="bg-zinc-950/70 p-4 rounded-lg border border-zinc-800 text-zinc-200 text-sm leading-relaxed whitespace-pre-line">
-              {project.architectureOverview || 'Architecture breakdown.'}
+          <div className="space-y-2">
+            <span className="font-mono text-[10px] text-[#767676] uppercase tracking-wider block">
+              SPEC 02 // ARCHITECTURAL FORMULATION & FAULT TOLERANCE
+            </span>
+            <div className="p-5 border border-[#202020] bg-[#08080A] text-sm text-[#D0D1D2] leading-relaxed whitespace-pre-line">
+              {project.architectureOverview}
             </div>
           </div>
 
-          <div>
-            <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-2">
-              Full Project Description & Production Context
-            </h3>
-            <div className="bg-zinc-950/70 p-4 rounded-lg border border-zinc-800 text-zinc-200 text-sm leading-relaxed">
+          <div className="space-y-2">
+            <span className="font-mono text-[10px] text-[#767676] uppercase tracking-wider block">
+              SPEC 03 // FULL PRODUCTION CONTEXT
+            </span>
+            <div className="p-5 border border-[#202020] bg-[#08080A] text-sm text-[#D0D1D2] leading-relaxed">
               {project.description}
             </div>
           </div>
@@ -327,42 +289,45 @@ export const ProjectEvidenceRoom: React.FC<ProjectEvidenceRoomProps> = ({
 
       {/* Tab 3: Version History & Diffs */}
       {activeTab === 'versions' && (
-        <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 space-y-4">
-          <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-2">
-            Release Evolution & Differential Notes
-          </h3>
-          <div className="space-y-4">
+        <div className="bg-[#000000] border border-[#272727] p-6 space-y-4">
+          <div className="font-mono text-xs text-[#767676] uppercase tracking-wider pb-2 border-b border-[#272727]">
+            REVISION TIMELINE // REVERSE CHRONOLOGICAL
+          </div>
+          <div className="space-y-3">
             {project.versionHistory.map((ver, idx) => (
               <div
                 key={ver.version}
-                className="bg-zinc-950/70 border border-zinc-800 rounded-lg p-4 space-y-2 relative"
+                className="p-4 border border-[#202020] bg-[#08080A] space-y-2 font-mono text-xs"
               >
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                  <div className="flex items-center gap-2.5">
-                    <span className="font-mono font-bold text-white text-sm px-2 py-0.5 rounded bg-indigo-600/20 text-indigo-300 border border-indigo-500/30">
+                  <div className="flex items-center gap-3">
+                    <span className="font-bold text-[#F1F2F2] px-2 py-0.5 bg-[#121216] border border-[#333333]">
                       {ver.version}
                     </span>
                     {idx === 0 && (
-                      <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-semibold">
-                        LATEST RELEASE
+                      <span className="text-[10px] text-[#F56B2A] font-semibold">
+                        [LATEST RELEASE]
                       </span>
                     )}
                     {ver.commitHash && (
-                      <span className="text-xs font-mono text-zinc-500 flex items-center gap-1">
-                        <GitCommit className="w-3.5 h-3.5 text-zinc-400" />
-                        {ver.commitHash}
+                      <span className="text-[10px] text-[#767676]">
+                        COMMIT: {ver.commitHash}
                       </span>
                     )}
                   </div>
-                  <span className="text-xs text-zinc-400 flex items-center gap-1 font-mono">
-                    <Calendar className="w-3.5 h-3.5" />
-                    {ver.releaseDate}
+                  <span className="text-[10px] text-[#767676]">
+                    RELEASED: {ver.releaseDate}
                   </span>
                 </div>
-                <p className="text-xs text-zinc-300 leading-relaxed">{ver.notes}</p>
+
+                <p className="text-[#D0D1D2] font-sans text-xs leading-relaxed">
+                  {ver.notes}
+                </p>
+
                 {ver.diffSummary && (
-                  <div className="mt-2 p-2 bg-zinc-900 border border-zinc-800/80 rounded text-[11px] font-mono text-zinc-400">
-                    <strong className="text-zinc-300">Diff Summary: </strong> {ver.diffSummary}
+                  <div className="text-[11px] text-[#767676] bg-[#000000] p-2.5 border border-[#1C1C1F]">
+                    <strong className="text-[#F1F2F2]">DIFF: </strong>
+                    {ver.diffSummary}
                   </div>
                 )}
               </div>
@@ -373,30 +338,29 @@ export const ProjectEvidenceRoom: React.FC<ProjectEvidenceRoomProps> = ({
 
       {/* Tab 4: Verified Contributions */}
       {activeTab === 'contributions' && (
-        <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 space-y-4">
-          <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-2">
-            Independent Contribution Attestations
-          </h3>
-          <div className="space-y-4">
+        <div className="bg-[#000000] border border-[#272727] p-6 space-y-4">
+          <div className="font-mono text-xs text-[#767676] uppercase tracking-wider pb-2 border-b border-[#272727]">
+            INDEPENDENT CONTRIBUTION ATTESTATIONS
+          </div>
+          <div className="space-y-3">
             {project.keyContributions.map((kc) => (
-              <div key={kc.id} className="bg-zinc-950/70 border border-zinc-800 rounded-lg p-4 space-y-2">
-                <div className="flex items-start justify-between gap-3">
-                  <h4 className="text-sm font-bold text-white">{kc.title}</h4>
-                  <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${
-                    kc.verificationStatus === 'employer_verified'
-                      ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
-                      : kc.verificationStatus === 'peer_endorsed'
-                      ? 'bg-sky-500/10 text-sky-400 border-sky-500/30'
-                      : 'bg-zinc-800 text-zinc-400 border-zinc-700'
-                  }`}>
-                    {kc.verificationStatus.replace('_', ' ').toUpperCase()}
+              <div
+                key={kc.id}
+                className="p-4 border border-[#202020] bg-[#08080A] space-y-2 text-xs"
+              >
+                <div className="flex items-start justify-between gap-3 font-mono">
+                  <h4 className="font-bold text-[#F1F2F2] text-sm">{kc.title}</h4>
+                  <span className="text-[10px] px-2 py-0.5 border border-[#333333] text-[#F56B2A] uppercase">
+                    {kc.verificationStatus.replace('_', ' ')}
                   </span>
                 </div>
-                <p className="text-xs text-zinc-300 leading-relaxed">{kc.description}</p>
+                <p className="text-[#D0D1D2] font-sans leading-relaxed">
+                  {kc.description}
+                </p>
                 {kc.verifiedBy && (
-                  <div className="text-[11px] text-zinc-400 pt-2 border-t border-zinc-800/60 flex items-center justify-between">
-                    <span>Verified by: <strong className="text-zinc-200">{kc.verifiedBy}</strong></span>
-                    {kc.verifiedAt && <span className="font-mono text-[10px]">{kc.verifiedAt}</span>}
+                  <div className="text-[11px] font-mono text-[#767676] pt-2 border-t border-[#1C1C1F] flex items-center justify-between">
+                    <span>ATTESTED BY: <strong className="text-[#F1F2F2]">{kc.verifiedBy}</strong></span>
+                    {kc.verifiedAt && <span>DATE: {kc.verifiedAt}</span>}
                   </div>
                 )}
               </div>
@@ -405,83 +369,85 @@ export const ProjectEvidenceRoom: React.FC<ProjectEvidenceRoomProps> = ({
         </div>
       )}
 
-      {/* Add Evidence Modal */}
+      {/* Modal: Add Evidence Artifact */}
       {showAddEvidenceModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-          <div className="bg-zinc-900 border border-zinc-800 rounded-xl max-w-xl w-full p-6 space-y-4 shadow-xl">
-            <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
-              <h3 className="text-base font-bold text-white">Upload Evidence Artifact</h3>
-              <button onClick={() => setShowAddEvidenceModal(false)} className="text-zinc-400 hover:text-white text-sm">✕</button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4">
+          <div className="bg-[#000000] border border-[#272727] max-w-xl w-full p-6 space-y-4">
+            <div className="flex items-center justify-between border-b border-[#272727] pb-3">
+              <h3 className="font-mono text-xs font-bold text-[#F1F2F2] uppercase tracking-wider">
+                [UPLOAD EVIDENCE ARTIFACT]
+              </h3>
+              <button onClick={() => setShowAddEvidenceModal(false)} className="font-mono text-xs text-[#767676] hover:text-[#F1F2F2]">[X]</button>
             </div>
-            <form onSubmit={handleCreateEvidence} className="space-y-3 text-xs">
+            <form onSubmit={handleCreateEvidence} className="space-y-3 text-xs font-mono">
               <div>
-                <label className="block text-zinc-300 mb-1">File Name</label>
+                <label className="block text-[#767676] mb-1 uppercase text-[10px]">FILE IDENTIFIER / NAME</label>
                 <input
                   type="text"
-                  placeholder="e.g. raft_election.go, latency_benchmark.json"
+                  placeholder="e.g. raft_pipeline.go, benchmark_latency.json"
                   value={newFileName}
                   onChange={(e) => setNewFileName(e.target.value)}
                   required
-                  className="w-full bg-zinc-950 border border-zinc-700 rounded p-2 text-zinc-100"
+                  className="w-full bg-[#08080A] border border-[#272727] p-2 text-[#F1F2F2] focus:outline-none focus:border-[#F56B2A]"
                 />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-zinc-300 mb-1">Artifact Type</label>
+                  <label className="block text-[#767676] mb-1 uppercase text-[10px]">ARTIFACT TYPE</label>
                   <select
                     value={newFileType}
                     onChange={(e) => setNewFileType(e.target.value as any)}
-                    className="w-full bg-zinc-950 border border-zinc-700 rounded p-2 text-zinc-100"
+                    className="w-full bg-[#08080A] border border-[#272727] p-2 text-[#F1F2F2] focus:outline-none focus:border-[#F56B2A]"
                   >
                     <option value="code">Source Code</option>
                     <option value="benchmark">Benchmark Log</option>
-                    <option value="diagram">Architecture Model</option>
+                    <option value="diagram">Architecture Spec</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-zinc-300 mb-1">Language / Format</label>
+                  <label className="block text-[#767676] mb-1 uppercase text-[10px]">SYNTAX / FORMAT</label>
                   <input
                     type="text"
                     value={newFileLang}
                     onChange={(e) => setNewFileLang(e.target.value)}
-                    className="w-full bg-zinc-950 border border-zinc-700 rounded p-2 text-zinc-100"
+                    className="w-full bg-[#08080A] border border-[#272727] p-2 text-[#F1F2F2] focus:outline-none focus:border-[#F56B2A]"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-zinc-300 mb-1">Architectural Explanation (Why this proves skill)</label>
+                <label className="block text-[#767676] mb-1 uppercase text-[10px]">ARCHITECTURAL RATIONALE</label>
                 <input
                   type="text"
-                  placeholder="Explains zero-allocation transport and failure recovery"
+                  placeholder="Explain why this source artifact proves system competency"
                   value={newFileExplanation}
                   onChange={(e) => setNewFileExplanation(e.target.value)}
-                  className="w-full bg-zinc-950 border border-zinc-700 rounded p-2 text-zinc-100"
+                  className="w-full bg-[#08080A] border border-[#272727] p-2 text-[#F1F2F2] focus:outline-none focus:border-[#F56B2A]"
                 />
               </div>
               <div>
-                <label className="block text-zinc-300 mb-1">Source Code / Benchmark Content</label>
+                <label className="block text-[#767676] mb-1 uppercase text-[10px]">CONTENT (CODE / JSON)</label>
                 <textarea
                   rows={6}
                   value={newFileContent}
                   onChange={(e) => setNewFileContent(e.target.value)}
-                  placeholder="Paste raw source code or JSON benchmarks..."
+                  placeholder="// Paste clean, unformatted raw code or benchmark data..."
                   required
-                  className="w-full bg-zinc-950 border border-zinc-700 rounded p-2 font-mono text-zinc-100"
+                  className="w-full bg-[#08080A] border border-[#272727] p-2 text-[#F1F2F2] focus:outline-none focus:border-[#F56B2A]"
                 />
               </div>
-              <div className="flex justify-end gap-2 pt-2">
+              <div className="flex justify-end gap-2 pt-2 border-t border-[#202020]">
                 <button
                   type="button"
                   onClick={() => setShowAddEvidenceModal(false)}
-                  className="px-4 py-2 bg-zinc-800 text-zinc-300 rounded font-medium"
+                  className="px-4 py-2 bg-[#0F0E12] text-[#767676] hover:text-[#F1F2F2] uppercase text-xs"
                 >
-                  Cancel
+                  [DISCARD]
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded font-medium"
+                  className="px-4 py-2 bg-[#F56B2A] text-black font-semibold uppercase text-xs"
                 >
-                  Save Artifact
+                  [COMMIT ARTIFACT]
                 </button>
               </div>
             </form>
@@ -489,59 +455,61 @@ export const ProjectEvidenceRoom: React.FC<ProjectEvidenceRoomProps> = ({
         </div>
       )}
 
-      {/* Add Version Modal */}
+      {/* Modal: Publish Version */}
       {showAddVersionModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-          <div className="bg-zinc-900 border border-zinc-800 rounded-xl max-w-lg w-full p-6 space-y-4 shadow-xl">
-            <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
-              <h3 className="text-base font-bold text-white">Publish Revision & Diff</h3>
-              <button onClick={() => setShowAddVersionModal(false)} className="text-zinc-400 hover:text-white text-sm">✕</button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4">
+          <div className="bg-[#000000] border border-[#272727] max-w-lg w-full p-6 space-y-4">
+            <div className="flex items-center justify-between border-b border-[#272727] pb-3">
+              <h3 className="font-mono text-xs font-bold text-[#F1F2F2] uppercase tracking-wider">
+                [PUBLISH REVISION & DIFF]
+              </h3>
+              <button onClick={() => setShowAddVersionModal(false)} className="font-mono text-xs text-[#767676] hover:text-[#F1F2F2]">[X]</button>
             </div>
-            <form onSubmit={handleCreateVersion} className="space-y-3 text-xs">
+            <form onSubmit={handleCreateVersion} className="space-y-3 text-xs font-mono">
               <div>
-                <label className="block text-zinc-300 mb-1">Version Number</label>
+                <label className="block text-[#767676] mb-1 uppercase text-[10px]">VERSION IDENTIFIER</label>
                 <input
                   type="text"
                   value={newVersionNum}
                   onChange={(e) => setNewVersionNum(e.target.value)}
                   required
-                  className="w-full bg-zinc-950 border border-zinc-700 rounded p-2 text-zinc-100 font-mono"
+                  className="w-full bg-[#08080A] border border-[#272727] p-2 text-[#F1F2F2] focus:outline-none focus:border-[#F56B2A]"
                 />
               </div>
               <div>
-                <label className="block text-zinc-300 mb-1">Release Notes</label>
+                <label className="block text-[#767676] mb-1 uppercase text-[10px]">RELEASE NOTES</label>
                 <textarea
                   rows={3}
                   value={newVersionNotes}
                   onChange={(e) => setNewVersionNotes(e.target.value)}
-                  placeholder="What improvements or fixes were made in this version?"
+                  placeholder="Key architectural changes and benchmark validations..."
                   required
-                  className="w-full bg-zinc-950 border border-zinc-700 rounded p-2 text-zinc-100"
+                  className="w-full bg-[#08080A] border border-[#272727] p-2 text-[#F1F2F2] font-sans focus:outline-none focus:border-[#F56B2A]"
                 />
               </div>
               <div>
-                <label className="block text-zinc-300 mb-1">Differential Summary (Key architectural delta)</label>
+                <label className="block text-[#767676] mb-1 uppercase text-[10px]">DIFF SUMMARY</label>
                 <input
                   type="text"
-                  placeholder="e.g. Added ring buffer, removed 4 allocations per message"
+                  placeholder="e.g. Ring buffer introduced; eliminated 4 socket allocations per message"
                   value={newVersionDiff}
                   onChange={(e) => setNewVersionDiff(e.target.value)}
-                  className="w-full bg-zinc-950 border border-zinc-700 rounded p-2 text-zinc-100"
+                  className="w-full bg-[#08080A] border border-[#272727] p-2 text-[#F1F2F2] focus:outline-none focus:border-[#F56B2A]"
                 />
               </div>
-              <div className="flex justify-end gap-2 pt-2">
+              <div className="flex justify-end gap-2 pt-2 border-t border-[#202020]">
                 <button
                   type="button"
                   onClick={() => setShowAddVersionModal(false)}
-                  className="px-4 py-2 bg-zinc-800 text-zinc-300 rounded font-medium"
+                  className="px-4 py-2 bg-[#0F0E12] text-[#767676] hover:text-[#F1F2F2] uppercase text-xs"
                 >
-                  Cancel
+                  [DISCARD]
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded font-medium"
+                  className="px-4 py-2 bg-[#F1F2F2] text-black font-semibold uppercase text-xs"
                 >
-                  Publish Version
+                  [PUBLISH REVISION]
                 </button>
               </div>
             </form>

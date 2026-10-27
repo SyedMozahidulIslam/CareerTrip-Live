@@ -1,18 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { User, Project, AssessmentSubmission, Endorsement } from '../types';
-import {
-  BarChart3,
-  TrendingUp,
-  ShieldCheck,
-  Award,
-  Layers,
-  FileCode,
-  Download,
-  Calendar,
-  CheckCircle2,
-  PieChart,
-  FileCheck
-} from 'lucide-react';
 
 interface AnalyticsProgressProps {
   currentUser: User;
@@ -44,9 +31,10 @@ export const AnalyticsProgress: React.FC<AnalyticsProgressProps> = ({
     const candidateEndorsements = allEndorsements.filter((e) => e.candidateId === currentUser.id);
 
     const dossier = {
-      network: 'CareerTrip Live - Verifiable Skills & Project Portfolio Network',
+      specification: 'CareerTrip Live - Verifiable Competency & Evidence Dossier',
+      dossierVersion: '2.0.0-SWISS',
       exportTimestamp: new Date().toISOString(),
-      candidate: {
+      candidateIdentity: {
         name: currentUser.name,
         handle: currentUser.handle,
         email: currentUser.email,
@@ -55,7 +43,8 @@ export const AnalyticsProgress: React.FC<AnalyticsProgressProps> = ({
         headline: currentUser.headline,
         yearsExperience: currentUser.yearsExperience,
       },
-      verifiedProjects: candidateProjects.map((p) => ({
+      verifiedEvidenceRooms: candidateProjects.map((p) => ({
+        roomIdentifier: p.id,
         title: p.title,
         verifiedStatus: p.verifiedStatus,
         techStack: p.techStack,
@@ -71,7 +60,7 @@ export const AnalyticsProgress: React.FC<AnalyticsProgressProps> = ({
         decision: s.humanReview?.decision || 'evaluated',
         dimensionScores: s.humanReview?.dimensionScores || s.aiEvaluation?.dimensionScores,
       })),
-      verifiedEndorsements: candidateEndorsements.map((e) => ({
+      verifiedAttestations: candidateEndorsements.map((e) => ({
         endorser: `${e.endorserName} (${e.endorserRole}, ${e.endorserCompany})`,
         relationship: e.relationship,
         verifiedSignature: e.verifiedSignature,
@@ -83,7 +72,7 @@ export const AnalyticsProgress: React.FC<AnalyticsProgressProps> = ({
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `CareerTrip_Verifiable_Dossier_${currentUser.handle}.json`;
+    a.download = `CareerTrip_Dossier_${currentUser.handle.toUpperCase()}.json`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -108,159 +97,175 @@ export const AnalyticsProgress: React.FC<AnalyticsProgressProps> = ({
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-      {/* Header Banner */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-zinc-900 border border-zinc-800 rounded-xl p-5 shadow-sm">
-        <div>
-          <div className="flex items-center gap-2">
-            <BarChart3 className="w-5 h-5 text-indigo-400" />
-            <h1 className="text-xl font-bold text-white tracking-tight">Analytics & Evidence Progress</h1>
-            <span className="text-[10px] px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/30 font-semibold">
-              TRANSPARENT REPUTATION METRICS
-            </span>
+    <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+      {/* Top Specification Strip */}
+      <div className="bg-[#000000] border border-[#272727]">
+        <div className="px-6 py-2 border-b border-[#272727] bg-[#0A0A0C] flex flex-wrap items-center justify-between font-mono text-[10px] text-[#767676]">
+          <div className="flex items-center gap-3">
+            <span className="text-[#F1F2F2]">METRICS SPEC // 08.0</span>
+            <span>/</span>
+            <span>DATA AGGREGATION: CONTINUOUS REAL-TIME</span>
           </div>
-          <p className="text-xs text-zinc-300 mt-1">
-            Network-wide verification trajectories, candidate assessment score distributions, and exportable dossiers.
-          </p>
+          <div className="flex items-center gap-3">
+            <span>AUDIT STANDARDS: STRICT REPUTATION METRICS</span>
+            <span>/</span>
+            <span className="text-[#F56B2A]">ACTIVE SUBJECT: @{currentUser.handle.toUpperCase()}</span>
+          </div>
         </div>
 
-        <button
-          onClick={handleExportDossier}
-          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold flex items-center gap-2 transition-colors shadow-sm"
-        >
-          <Download className="w-3.5 h-3.5" />
-          <span>Export Verifiable Dossier (JSON)</span>
-        </button>
-      </div>
+        <div className="p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+          <div className="space-y-1">
+            <h1 className="text-2xl sm:text-3xl font-light text-[#F1F2F2] tracking-tight">
+              Analytics & Progression Metrics
+            </h1>
+            <p className="text-sm text-[#767676] font-mono">
+              Quantitative verification trajectories, assessment score distributions, and portable dossier export.
+            </p>
+          </div>
 
-      {/* Top Metrics Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
-        <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 space-y-1">
-          <span className="text-zinc-400 uppercase text-[10px] tracking-wider block">Total Candidates</span>
-          <div className="text-2xl font-bold font-mono text-white">{metrics.totalCandidates}</div>
-          <span className="text-[11px] text-emerald-400 flex items-center gap-1">
-            <TrendingUp className="w-3 h-3" />
-            {metrics.certifiedCandidates} Evaluator Certified
-          </span>
-        </div>
-
-        <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 space-y-1">
-          <span className="text-zinc-400 uppercase text-[10px] tracking-wider block">Evidence Rooms Active</span>
-          <div className="text-2xl font-bold font-mono text-white">{metrics.totalProjects}</div>
-          <span className="text-[11px] text-sky-400">
-            {metrics.totalEvidenceFiles} Audited Artifacts
-          </span>
-        </div>
-
-        <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 space-y-1">
-          <span className="text-zinc-400 uppercase text-[10px] tracking-wider block">Assessment Submissions</span>
-          <div className="text-2xl font-bold font-mono text-white">{metrics.totalSubmissions}</div>
-          <span className="text-[11px] text-indigo-300">
-            {metrics.verifiedSubmissions} Certified by Human Auditors
-          </span>
-        </div>
-
-        <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 space-y-1">
-          <span className="text-zinc-400 uppercase text-[10px] tracking-wider block">Integrity Defense Rate</span>
-          <div className="text-2xl font-bold font-mono text-emerald-400">98.4%</div>
-          <span className="text-[11px] text-zinc-400">
-            Zero auto-disqualification policy
-          </span>
+          <button
+            onClick={handleExportDossier}
+            className="px-4 py-2 bg-[#F56B2A] hover:bg-[#ff7b3d] text-black font-mono text-xs font-semibold uppercase tracking-wider transition-colors shrink-0"
+          >
+            [EXPORT VERIFIABLE DOSSIER (JSON)]
+          </button>
         </div>
       </div>
 
-      {/* Distribution Grid */}
+      {/* Metric Cells */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 font-mono text-xs">
+        <div className="bg-[#000000] border border-[#272727] p-4 space-y-1">
+          <span className="text-[10px] text-[#767676] uppercase tracking-wider block">INDEXED CANDIDATES</span>
+          <div className="text-2xl font-bold text-[#F1F2F2]">{metrics.totalCandidates}</div>
+          <span className="text-[10px] text-[#F56B2A] block">
+            {metrics.certifiedCandidates} EVALUATOR CERTIFIED
+          </span>
+        </div>
+
+        <div className="bg-[#000000] border border-[#272727] p-4 space-y-1">
+          <span className="text-[10px] text-[#767676] uppercase tracking-wider block">EVIDENCE ROOMS TRACKED</span>
+          <div className="text-2xl font-bold text-[#F1F2F2]">{metrics.totalProjects}</div>
+          <span className="text-[10px] text-[#767676] block">
+            {metrics.totalEvidenceFiles} AUDITED ARTIFACTS
+          </span>
+        </div>
+
+        <div className="bg-[#000000] border border-[#272727] p-4 space-y-1">
+          <span className="text-[10px] text-[#767676] uppercase tracking-wider block">PRACTICAL ASSESSMENTS</span>
+          <div className="text-2xl font-bold text-[#F1F2F2]">{metrics.totalSubmissions}</div>
+          <span className="text-[10px] text-[#F1F2F2] block">
+            {metrics.verifiedSubmissions} HUMAN AUDITED
+          </span>
+        </div>
+
+        <div className="bg-[#000000] border border-[#272727] p-4 space-y-1">
+          <span className="text-[10px] text-[#767676] uppercase tracking-wider block">INTEGRITY DEFENSE ACCURACY</span>
+          <div className="text-2xl font-bold text-[#F56B2A]">98.4%</div>
+          <span className="text-[10px] text-[#767676] block">
+            ZERO AUTO-DISQUALIFICATION
+          </span>
+        </div>
+      </div>
+
+      {/* Two-Column Aligned Tables */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Tier Distribution (6 cols) */}
-        <div className="lg:col-span-6 bg-zinc-900 border border-zinc-800 rounded-xl p-5 space-y-4 shadow-sm">
-          <h3 className="text-sm font-bold text-white flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            Candidate Verification Tier Breakdown
-          </h3>
-          <p className="text-xs text-zinc-400">
-            Strict gatekeeping guarantees that no candidate achieves verified status without code evidence or signed endorsements.
-          </p>
+        {/* Tier Distribution Table (6 cols) */}
+        <div className="lg:col-span-6 bg-[#000000] border border-[#272727]">
+          <div className="px-5 py-3 border-b border-[#272727] bg-[#0A0A0C] flex items-center justify-between font-mono text-xs">
+            <h3 className="font-semibold text-[#F1F2F2] uppercase tracking-wider">
+              08.1 // VERIFICATION TIER DISTRIBUTION
+            </h3>
+            <span className="text-[10px] text-[#767676]">NETWORK AUDIT</span>
+          </div>
 
-          <div className="space-y-3 pt-2">
-            {Object.entries(tierDist).map(([tier, count]: [string, any]) => {
-              const total = (Object.values(tierDist) as number[]).reduce((a, b) => a + b, 0) || 1;
-              const pct = Math.round((count / total) * 100);
+          <div className="p-5 space-y-4 font-mono text-xs">
+            <p className="text-[#767676] text-[11px] font-sans leading-relaxed">
+              Strict gatekeeping ensures candidates cannot self-assign verification tiers without signed proof.
+            </p>
 
-              return (
-                <div key={tier} className="space-y-1.5 text-xs">
-                  <div className="flex justify-between font-medium">
-                    <span className="text-zinc-200">{tier}</span>
-                    <span className="font-mono text-zinc-400">{count} ({pct}%)</span>
+            <div className="space-y-3 pt-2">
+              {Object.entries(tierDist).map(([tier, count]: [string, any]) => {
+                const total = (Object.values(tierDist) as number[]).reduce((a, b) => a + b, 0) || 1;
+                const pct = Math.round((count / total) * 100);
+
+                return (
+                  <div key={tier} className="space-y-1.5 border border-[#1C1C1F] p-3 bg-[#08080A]">
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-[#F1F2F2] font-semibold">{tier.toUpperCase()}</span>
+                      <span className="text-[#F56B2A]">{count} UNITS [{pct}.0%]</span>
+                    </div>
+                    {/* 2px thin rectangular meter */}
+                    <div className="w-full bg-[#1A1A1A] h-1 border border-[#272727]">
+                      <div
+                        className={`h-full ${
+                          tier === 'Evaluator Certified'
+                            ? 'bg-[#F56B2A]'
+                            : tier === 'Employer Verified'
+                            ? 'bg-[#F1F2F2]'
+                            : tier === 'Peer Reviewed'
+                            ? 'bg-[#A0A2A4]'
+                            : 'bg-[#404040]'
+                        }`}
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
                   </div>
-                  <div className="w-full bg-zinc-950 rounded-full h-2 overflow-hidden border border-zinc-800">
-                    <div
-                      className={`h-full rounded-full ${
-                        tier === 'Evaluator Certified'
-                          ? 'bg-emerald-500'
-                          : tier === 'Employer Verified'
-                          ? 'bg-indigo-500'
-                          : tier === 'Peer Reviewed'
-                          ? 'bg-sky-500'
-                          : 'bg-amber-500'
-                      }`}
-                      style={{ width: `${pct}%` }}
-                    ></div>
-                  </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </div>
 
-        {/* Candidate Personal Progress Trajectory (6 cols) */}
-        <div className="lg:col-span-6 bg-zinc-900 border border-zinc-800 rounded-xl p-5 space-y-4 shadow-sm">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-bold text-white flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-indigo-400" />
-              Candidate Verified Trajectory: {currentUser.name}
+        {/* Candidate Progression Timeline (6 cols) */}
+        <div className="lg:col-span-6 bg-[#000000] border border-[#272727]">
+          <div className="px-5 py-3 border-b border-[#272727] bg-[#0A0A0C] flex items-center justify-between font-mono text-xs">
+            <h3 className="font-semibold text-[#F1F2F2] uppercase tracking-wider">
+              08.2 // CANDIDATE TRAJECTORY // @{currentUser.handle.toUpperCase()}
             </h3>
-            <span className="text-xs font-mono text-emerald-400 font-bold">
-              {currentUser.overallScore}/100 Overall
+            <span className="text-[10px] text-[#F56B2A] font-bold">
+              {currentUser.overallScore}.0% COMPOSITE
             </span>
           </div>
 
-          <div className="bg-zinc-950 p-4 rounded-lg border border-zinc-800 space-y-3 text-xs">
-            <div className="flex justify-between text-zinc-400 text-[11px] pb-1 border-b border-zinc-900">
-              <span>Quarter</span>
-              <span>Milestone Achievement</span>
-              <span>Verified Score</span>
+          <div className="p-5 space-y-4 font-mono text-xs">
+            <div className="space-y-2 border border-[#202020] bg-[#08080A] p-4">
+              <div className="flex justify-between text-[10px] text-[#767676] pb-1 border-b border-[#1A1A1D] uppercase">
+                <span>QUARTER</span>
+                <span>ACHIEVED DELIVERABLE</span>
+                <span>SCORE</span>
+              </div>
+
+              <div className="space-y-2.5 pt-1 text-xs">
+                <div className="flex justify-between items-center text-[#D0D1D2]">
+                  <span className="text-[10px] text-[#767676]">2026-Q1</span>
+                  <span className="font-sans">Initial Storage Engine Specifications</span>
+                  <span className="text-[#A0A2A4]">74.0%</span>
+                </div>
+                <div className="flex justify-between items-center text-[#D0D1D2]">
+                  <span className="text-[10px] text-[#767676]">2026-Q2</span>
+                  <span className="font-sans">Partition Consensus Practical Challenge</span>
+                  <span className="text-[#F1F2F2]">88.0%</span>
+                </div>
+                <div className="flex justify-between items-center text-[#D0D1D2]">
+                  <span className="text-[10px] text-[#767676]">2026-Q3</span>
+                  <span className="font-sans">VP Engineering & Evaluator Signed Attestation</span>
+                  <span className="text-[#F56B2A] font-bold">94.0%</span>
+                </div>
+              </div>
             </div>
 
-            <div className="space-y-2">
-              <div className="flex justify-between items-center text-zinc-300">
-                <span className="font-mono text-[11px] text-zinc-500">Q1 2026</span>
-                <span className="text-xs">Published Initial Storage Engine Spec</span>
-                <span className="font-mono text-zinc-400">74%</span>
+            <div className="p-4 border border-[#202020] bg-[#0A0A0E] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <strong className="text-[#F1F2F2] uppercase block text-xs">PORTABLE DOSSIER ARTIFACT:</strong>
+                <span className="text-[10px] text-[#767676]">Export machine-readable JSON verification proof.</span>
               </div>
-              <div className="flex justify-between items-center text-zinc-300">
-                <span className="font-mono text-[11px] text-zinc-500">Q2 2026</span>
-                <span className="text-xs">Passed Partition Consensus Assessment</span>
-                <span className="font-mono text-indigo-400 font-semibold">88%</span>
-              </div>
-              <div className="flex justify-between items-center text-zinc-300">
-                <span className="font-mono text-[11px] text-zinc-500">Q3 2026</span>
-                <span className="text-xs">Manager & Evaluator Signed Verification</span>
-                <span className="font-mono text-emerald-400 font-bold">94%</span>
-              </div>
+              <button
+                onClick={handleExportDossier}
+                className="px-3 py-1.5 bg-[#F1F2F2] hover:bg-[#ffffff] text-black font-semibold uppercase text-[11px] transition-colors shrink-0"
+              >
+                [DOWNLOAD JSON]
+              </button>
             </div>
-          </div>
-
-          <div className="p-3 bg-zinc-950/60 rounded-lg border border-zinc-850 text-xs text-zinc-300 flex items-center justify-between">
-            <div>
-              <strong className="text-white block">Download Portable Dossier:</strong>
-              <span className="text-[11px] text-zinc-400">Share cryptographic proof of competence with hiring teams.</span>
-            </div>
-            <button
-              onClick={handleExportDossier}
-              className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 rounded-lg text-xs font-medium transition-colors"
-            >
-              Export
-            </button>
           </div>
         </div>
       </div>

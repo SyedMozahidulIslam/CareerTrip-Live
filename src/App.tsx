@@ -392,7 +392,7 @@ export default function App() {
     : null;
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col font-sans selection:bg-indigo-500 selection:text-white">
+    <div className="min-h-screen bg-[#000000] text-[#F1F2F2] flex flex-col font-sans selection:bg-[#F56B2A] selection:text-black">
       {/* Top Navbar */}
       <Navbar
         currentView={currentView}
@@ -428,18 +428,29 @@ export default function App() {
             onUpdateUser={handleUpdateUser}
           />
         ) : currentView === 'projects' ? (
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-            <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
-              <div>
-                <h1 className="text-xl font-bold text-white flex items-center gap-2">
-                  <Layers className="w-5 h-5 text-indigo-400" />
-                  All Evidence Rooms Across Network
+          <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+            <div className="bg-[#000000] border border-[#272727]">
+              <div className="px-6 py-2 border-b border-[#272727] bg-[#0A0A0C] flex flex-wrap items-center justify-between font-mono text-[10px] text-[#767676]">
+                <div className="flex items-center gap-3">
+                  <span className="text-[#F1F2F2]">EVIDENCE SPEC // 03.0</span>
+                  <span>/</span>
+                  <span>DIRECTORY: NETWORK AUDITED ROOMS</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span>ROOMS TRACKED: {allProjects.length}</span>
+                  <span>/</span>
+                  <span className="text-[#F56B2A]">VERIFICATION: MANDATORY COMMIT AUDIT</span>
+                </div>
+              </div>
+
+              <div className="p-6 sm:p-8 space-y-1">
+                <h1 className="text-2xl sm:text-3xl font-light text-[#F1F2F2] tracking-tight">
+                  Audited Evidence Rooms
                 </h1>
-                <p className="text-xs text-zinc-400">
-                  Inspect deep code implementations, version diffs, and verified benchmarks.
+                <p className="text-sm text-[#767676] font-mono">
+                  Inspect deep code implementations, version diffs, and benchmark logs across all registered engineers.
                 </p>
               </div>
-              <span className="text-xs font-mono text-zinc-500">{allProjects.length} Rooms Tracked</span>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -449,35 +460,37 @@ export default function App() {
                   <div
                     key={p.id}
                     onClick={() => setSelectedProjectId(p.id)}
-                    className="bg-zinc-900 border border-zinc-800 hover:border-zinc-700 transition-all rounded-xl p-5 space-y-3 cursor-pointer shadow-sm"
+                    className="bg-[#000000] border border-[#272727] hover:border-[#404040] transition-colors p-6 space-y-4 cursor-pointer"
                   >
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] px-2 py-0.5 rounded bg-zinc-950 text-zinc-400 font-mono">
-                        {owner?.name || 'Candidate'}
+                    <div className="flex items-center justify-between font-mono text-[10px]">
+                      <span className="text-[#767676]">
+                        AUTHOR: {owner?.name.toUpperCase() || 'CANDIDATE'}
                       </span>
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-semibold">
+                      <span className="border border-[#333333] px-1.5 py-0.5 text-[#F56B2A] uppercase">
                         {p.verifiedStatus}
                       </span>
                     </div>
 
-                    <h3 className="font-bold text-white text-base hover:text-indigo-400 transition-colors">
-                      {p.title}
-                    </h3>
-                    <p className="text-xs text-zinc-300 line-clamp-2 leading-relaxed">
-                      {p.tagline}
-                    </p>
+                    <div className="space-y-1">
+                      <h3 className="font-bold text-[#F1F2F2] text-base hover:text-[#F56B2A] transition-colors">
+                        {p.title}
+                      </h3>
+                      <p className="text-xs text-[#767676] font-mono line-clamp-2">
+                        {p.tagline}
+                      </p>
+                    </div>
 
-                    <div className="flex flex-wrap gap-1.5 pt-1">
+                    <div className="flex flex-wrap gap-1.5 pt-1 font-mono text-[10px]">
                       {p.techStack.slice(0, 3).map((t) => (
-                        <span key={t} className="text-[10px] px-2 py-0.5 rounded bg-zinc-950 text-zinc-300 border border-zinc-800 font-mono">
+                        <span key={t} className="px-2 py-0.5 bg-[#0A0A0D] border border-[#222225] text-[#D0D1D2]">
                           {t}
                         </span>
                       ))}
                     </div>
 
-                    <div className="flex items-center justify-between text-xs text-zinc-500 pt-2 border-t border-zinc-800">
-                      <span>{p.evidenceFiles.length} Evidence Artifacts</span>
-                      <span className="text-indigo-400 font-medium">Enter Room →</span>
+                    <div className="flex items-center justify-between font-mono text-xs text-[#767676] pt-3 border-t border-[#1C1C1F]">
+                      <span>{p.evidenceFiles.length} EVIDENCE FILES</span>
+                      <span className="text-[#F1F2F2] hover:text-[#F56B2A] uppercase font-semibold">[ENTER ROOM →]</span>
                     </div>
                   </div>
                 );

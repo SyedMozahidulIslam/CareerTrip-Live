@@ -1,18 +1,5 @@
 import React from 'react';
 import { User, SkillItem, Project, Endorsement } from '../types';
-import {
-  ShieldCheck,
-  Award,
-  ExternalLink,
-  Github,
-  MapPin,
-  Clock,
-  Code2,
-  FileCode,
-  X,
-  Share2,
-  CheckCircle2
-} from 'lucide-react';
 
 interface PublicPortfolioModalProps {
   user: User;
@@ -32,104 +19,102 @@ export const PublicPortfolioModal: React.FC<PublicPortfolioModalProps> = ({
   onSelectProject,
 }) => {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
-      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl max-w-4xl w-full p-6 sm:p-8 space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto">
-        {/* Modal Header */}
-        <div className="flex items-start justify-between border-b border-zinc-800 pb-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4">
+      <div className="bg-[#000000] border border-[#272727] max-w-4xl w-full p-6 sm:p-8 space-y-6 font-mono text-xs max-h-[90vh] overflow-y-auto">
+        {/* Top Identification Strip */}
+        <div className="flex items-start justify-between border-b border-[#272727] pb-4">
           <div className="flex items-center gap-4">
             <img
               src={user.avatarUrl}
               alt={user.name}
-              className="w-16 h-16 rounded-xl object-cover border border-zinc-700 shadow-md"
+              className="w-16 h-16 object-cover border border-[#272727] grayscale"
             />
             <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-xl font-bold text-white tracking-tight">{user.name}</h2>
-                <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-semibold flex items-center gap-1">
-                  <ShieldCheck className="w-3 h-3" />
-                  {user.verifiedTier}
+              <div className="flex items-center gap-2.5">
+                <h2 className="text-xl sm:text-2xl font-light text-[#F1F2F2] tracking-tight">{user.name}</h2>
+                <span className="text-[10px] px-2 py-0.5 border border-[#F56B2A] text-[#F56B2A] uppercase font-bold">
+                  [{user.verifiedTier}]
                 </span>
               </div>
-              <p className="text-xs text-zinc-300 mt-0.5">{user.headline}</p>
-              <div className="flex items-center gap-3 text-xs text-zinc-400 mt-1 font-mono">
-                <span>{user.location}</span>
-                <span>•</span>
-                <span className="text-emerald-400 font-bold">{user.overallScore}/100 Verified Score</span>
+              <p className="text-xs text-[#767676] font-sans mt-0.5">{user.headline}</p>
+              <div className="flex items-center gap-3 text-[10px] text-[#767676] mt-1">
+                <span>LOC: {user.location}</span>
+                <span>/</span>
+                <span className="text-[#F56B2A] font-bold">SCORE: {user.overallScore}/100</span>
               </div>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="text-zinc-400 hover:text-white p-1 rounded-lg bg-zinc-800/80"
+            className="text-[#767676] hover:text-[#F1F2F2] px-2 py-1 border border-[#272727] bg-[#0A0A0C]"
           >
-            <X className="w-5 h-5" />
+            [CLOSE DOSSIER]
           </button>
         </div>
 
-        {/* Bio */}
-        <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-xs text-zinc-300 leading-relaxed">
-          <span className="font-semibold text-zinc-400 uppercase tracking-wider block text-[10px] mb-1">
-            Candidate Biography & Verified Focus
+        {/* Technical Summary */}
+        <div className="p-4 border border-[#202020] bg-[#08080A] space-y-1">
+          <span className="text-[10px] text-[#767676] uppercase tracking-wider block">
+            CANDIDATE TECHNICAL STATEMENT
           </span>
-          {user.bio}
+          <p className="text-[#D0D1D2] font-sans text-xs leading-relaxed">
+            {user.bio}
+          </p>
         </div>
 
-        {/* Verified Skills */}
-        <div className="space-y-3">
-          <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">
-            Verified Competencies ({skills.length})
+        {/* Verified Competencies */}
+        <div className="space-y-2">
+          <h3 className="text-[10px] text-[#767676] uppercase tracking-wider">
+            01 // AUDITED TECHNICAL COMPETENCIES ({skills.length})
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {skills.map((s) => (
               <div
                 key={s.id}
-                className="bg-zinc-950 p-3 rounded-lg border border-zinc-800 text-xs space-y-1.5"
+                className="p-3 border border-[#202020] bg-[#08080A] flex justify-between items-center text-xs"
               >
-                <div className="flex justify-between items-center">
-                  <span className="font-semibold text-zinc-200">{s.name}</span>
-                  <span className="font-mono text-emerald-400 font-bold">
-                    {s.verifiedScore || s.proficiency * 20}%
-                  </span>
+                <div>
+                  <span className="font-semibold text-[#F1F2F2] block">{s.name}</span>
+                  <span className="text-[9px] text-[#767676] uppercase">{s.category} // {s.evidenceCount} ARTIFACTS</span>
                 </div>
-                <div className="flex justify-between text-[10px] text-zinc-500">
-                  <span>{s.category}</span>
-                  <span>{s.evidenceCount} verified artifacts</span>
-                </div>
+                <span className="font-bold text-[#F56B2A]">
+                  {s.verifiedScore || s.proficiency * 20}%
+                </span>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Projects Preview */}
-        <div className="space-y-3">
-          <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">
-            Project Evidence Rooms ({projects.length})
+        {/* Verified Projects */}
+        <div className="space-y-2">
+          <h3 className="text-[10px] text-[#767676] uppercase tracking-wider">
+            02 // AUDITED EVIDENCE ROOMS ({projects.length})
           </h3>
-          <div className="space-y-3">
+          <div className="space-y-2">
             {projects.map((p) => (
               <div
                 key={p.id}
-                className="bg-zinc-950 p-4 rounded-xl border border-zinc-800 space-y-2 text-xs"
+                className="p-4 border border-[#202020] bg-[#08080A] space-y-2"
               >
                 <div className="flex justify-between items-start">
                   <div>
-                    <h4 className="font-bold text-white text-sm">{p.title}</h4>
-                    <p className="text-zinc-400 text-xs mt-0.5">{p.tagline}</p>
+                    <h4 className="font-bold text-[#F1F2F2] text-sm">{p.title}</h4>
+                    <p className="text-[#767676] text-xs font-sans mt-0.5">{p.tagline}</p>
                   </div>
                   <button
                     onClick={() => {
                       onClose();
                       onSelectProject(p.id);
                     }}
-                    className="px-2.5 py-1 bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-indigo-500/30 rounded text-xs font-semibold transition-colors"
+                    className="px-2.5 py-1 bg-[#F1F2F2] hover:bg-[#ffffff] text-black text-[10px] uppercase font-semibold transition-colors"
                   >
-                    Inspect Artifacts →
+                    [INSPECT ARTIFACTS →]
                   </button>
                 </div>
-                <div className="flex flex-wrap gap-1.5 pt-1">
+                <div className="flex flex-wrap gap-1.5 pt-1 text-[9px]">
                   {p.techStack.map((tech) => (
-                    <span key={tech} className="text-[10px] px-2 py-0.5 rounded bg-zinc-900 text-zinc-300 border border-zinc-800 font-mono">
+                    <span key={tech} className="px-1.5 py-0.5 bg-[#000000] border border-[#272727] text-[#D0D1D2]">
                       {tech}
                     </span>
                   ))}
@@ -139,22 +124,22 @@ export const PublicPortfolioModal: React.FC<PublicPortfolioModalProps> = ({
           </div>
         </div>
 
-        {/* Endorsements */}
+        {/* Signed Attestations */}
         {endorsements.length > 0 && (
-          <div className="space-y-3">
-            <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">
-              Signed Endorsements ({endorsements.length})
+          <div className="space-y-2">
+            <h3 className="text-[10px] text-[#767676] uppercase tracking-wider">
+              03 // SIGNED ATTESTATIONS ({endorsements.length})
             </h3>
             <div className="space-y-2">
               {endorsements.map((e) => (
-                <div key={e.id} className="bg-zinc-950 p-3 rounded-lg border border-zinc-800 text-xs space-y-1">
-                  <div className="flex justify-between text-zinc-200">
-                    <strong>{e.endorserName} ({e.endorserRole}, {e.endorserCompany})</strong>
-                    <span className="text-indigo-400 font-mono text-[10px]">{e.relationship}</span>
+                <div key={e.id} className="p-3 border border-[#202020] bg-[#08080A] space-y-1">
+                  <div className="flex justify-between text-[#F1F2F2]">
+                    <strong>{e.endorserName} [{e.endorserRole}, {e.endorserCompany}]</strong>
+                    <span className="text-[#F56B2A] text-[10px] uppercase">{e.relationship}</span>
                   </div>
-                  <p className="text-zinc-300 italic text-[11px]">"{e.comment}"</p>
-                  <div className="text-[9px] font-mono text-zinc-500 truncate pt-1">
-                    Sig: {e.verifiedSignature}
+                  <p className="text-[#767676] italic font-serif text-xs">"{e.comment}"</p>
+                  <div className="text-[9px] text-[#555555] pt-1">
+                    SIG: {e.verifiedSignature}
                   </div>
                 </div>
               ))}
